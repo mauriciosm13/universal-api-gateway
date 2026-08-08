@@ -1,0 +1,10 @@
+.git
+.github
+docs
+.ai
+*.md
+!README.md
+.DS_Store
+coverage.out
+bin/
+dist/
