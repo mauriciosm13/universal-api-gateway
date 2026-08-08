@@ -1,8 +1,5 @@
 # universal-api-gateway
 
-[![CI](https://github.com/mauriciomendonca/universal-api-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/mauriciomendonca/universal-api-gateway/actions/workflows/ci.yml)
-[![Docker](https://github.com/mauriciomendonca/universal-api-gateway/actions/workflows/docker.yml/badge.svg)](https://github.com/mauriciomendonca/universal-api-gateway/actions/workflows/docker.yml)
-
 Cloud-agnostic API Gateway for authentication, routing, and rate limiting.
 
 **Status: v0.1 — foundation in progress**
