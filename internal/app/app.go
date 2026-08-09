@@ -1,24 +1,33 @@
 package app
 
 import (
-	authstub "github.com/mauriciomendonca/universal-api-gateway/internal/auth/stub"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/auth"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
-	middlewarestub "github.com/mauriciomendonca/universal-api-gateway/internal/middleware/stub"
-	observabilitystub "github.com/mauriciomendonca/universal-api-gateway/internal/observability/stub"
-	ratelimitstub "github.com/mauriciomendonca/universal-api-gateway/internal/ratelimit/stub"
-	routingstub "github.com/mauriciomendonca/universal-api-gateway/internal/routing/stub"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/di"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/middleware"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/observability"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/ratelimit"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/routing"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/server"
 )
 
-// New builds the gateway dependency graph from configuration and M0 stubs.
-func New(cfg config.Config) server.Dependencies {
-	return server.Dependencies{
-		Config:        cfg,
-		Authenticator: authstub.NewNoOpAuthenticator(),
-		Router:        routingstub.NewNoOpRouter(),
-		Limiter:       ratelimitstub.NewNoOpLimiter(),
-		Pipeline:      middlewarestub.NewPassthroughPipeline(),
-		Logger:        observabilitystub.NewNoOpLogger(),
-		Tracer:        observabilitystub.NewNoOpTracer(),
+// DefaultModules returns the standard M0 module set for gateway wiring.
+func DefaultModules() []di.Module {
+	return []di.Module{
+		auth.Module{},
+		routing.Module{},
+		ratelimit.Module{},
+		middleware.Module{},
+		observability.Module{},
+		server.Module{},
 	}
+}
+
+// Build constructs server.Dependencies from configuration and registered modules.
+// When no modules are passed, DefaultModules is used.
+func Build(cfg config.Config, modules ...di.Module) (server.Dependencies, error) {
+	if len(modules) == 0 {
+		modules = DefaultModules()
+	}
+	return di.NewBuilder(cfg, modules...).Build()
 }

@@ -57,7 +57,7 @@ Every feature must satisfy at least one of:
 
 - [x] Repository structure
 - [x] Hexagonal architecture (modules scaffolded)
-- [ ] Dependency injection
+- [x] Dependency injection
 - [x] Configuration system (environment variables)
 - [x] Docker
 - [x] Docker Compose

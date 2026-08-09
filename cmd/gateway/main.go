@@ -25,7 +25,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	deps := app.New(cfg)
+	deps, err := app.Build(cfg)
+	if err != nil {
+		logger.Error("failed to build dependencies", "error", err)
+		os.Exit(1)
+	}
+
 	srv := server.New(deps)
 
 	go func() {
