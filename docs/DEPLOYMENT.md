@@ -4,7 +4,7 @@
 
 - Docker
 - Docker Compose
-- Kubernetes / Helm (planned)
+- Kubernetes orchestration (planned — see [Roadmap](ROADMAP.md#milestone-8--kubernetes-orchestration))
 - AWS, GCP, Azure (planned)
 
 ## Docker

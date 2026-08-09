@@ -17,7 +17,7 @@
 | M5 — Plugin Platform | ⚪ Not started |
 | M6 — API Management | ⚪ Not started |
 | M7 — Multi Cloud | ⚪ Not started |
-| M8 — Cloud Native | ⚪ Not started |
+| M8 — Kubernetes Orchestration | ⚪ Not started |
 | M9 — Edge Platform | ⚪ Not started |
 | M10 — AI Native Gateway | ⚪ Not started |
 | M11 — Developer Platform | ⚪ Not started |
@@ -56,11 +56,13 @@ Every feature must satisfy at least one of:
 ### Deliverables
 
 - [x] Repository structure
-- [ ] Hexagonal architecture (modules scaffolded)
+- [x] Hexagonal architecture (modules scaffolded)
 - [ ] Dependency injection
 - [x] Configuration system (environment variables)
 - [x] Docker
 - [x] Docker Compose
+- [ ] Kubernetes orchestration (base manifests: Deployment, Service, ConfigMap)
+- [ ] `deploy/kubernetes/` layout (Kustomize overlays for dev / staging / prod)
 - [x] GitHub Actions (CI)
 - [ ] Conventional Commits (enforced in CI)
 - [ ] OpenTelemetry setup
@@ -210,15 +212,33 @@ Every feature must satisfy at least one of:
 
 ---
 
-## Milestone 8 — Cloud Native
+## Milestone 8 — Kubernetes Orchestration
 
-**Goal:** Kubernetes-native deployment.
+**Goal:** Production-grade deployment orchestrated by Kubernetes.
 
+### Base orchestration
+
+- [ ] Deployment with liveness and readiness probes (`/health/live`, `/health/ready`)
+- [ ] Service (ClusterIP and LoadBalancer)
+- [ ] Ingress (TLS termination, external routing)
+- [ ] ConfigMap and Secret for environment-based configuration
 - [ ] Helm chart
-- [ ] Gateway API support
-- [ ] Autoscaling, rolling / blue-green / canary deploys
+- [ ] Kustomize overlays (dev, staging, prod)
 
-**Success criteria:** Production deployment on Kubernetes.
+### Production operations
+
+- [ ] HorizontalPodAutoscaler
+- [ ] PodDisruptionBudget
+- [ ] Rolling updates, blue-green, and canary deploys
+- [ ] NetworkPolicy (ingress / egress rules)
+- [ ] Gateway API support
+
+### Delivery pipeline
+
+- [ ] CI publishes container image to registry
+- [ ] CD applies manifests (Argo CD or Flux)
+
+**Success criteria:** Gateway runs in production on Kubernetes with horizontal scaling and zero-downtime deploys.
 
 ---
 

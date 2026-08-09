@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/mauriciomendonca/universal-api-gateway/internal/app"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/server"
 )
@@ -24,7 +25,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	srv := server.New(cfg)
+	deps := app.New(cfg)
+	srv := server.New(deps)
 
 	go func() {
 		logger.Info("gateway starting", "addr", cfg.Addr())

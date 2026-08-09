@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Hexagonal architecture scaffold (ports, stubs, composition root) for auth, routing, ratelimit, middleware, and observability modules
+- RFC 0001 and specification for M0 package boundaries
 - Project foundation (v0.1)
 - Health endpoints: `/health`, `/health/live`, `/health/ready`
 - Environment-based configuration
