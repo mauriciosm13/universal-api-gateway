@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  labels:
+    app.kubernetes.io/name: universal-api-gateway
+    app.kubernetes.io/component: gateway
+data:
+  GATEWAY_HOST: "0.0.0.0"
+  GATEWAY_PORT: "8080"
+  GATEWAY_READ_TIMEOUT: "15s"
+  GATEWAY_WRITE_TIMEOUT: "15s"
+  GATEWAY_IDLE_TIMEOUT: "60s"

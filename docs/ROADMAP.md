@@ -61,8 +61,8 @@ Every feature must satisfy at least one of:
 - [x] Configuration system (environment variables)
 - [x] Docker
 - [x] Docker Compose
-- [ ] Kubernetes orchestration (base manifests: Deployment, Service, ConfigMap)
-- [ ] `deploy/kubernetes/` layout (Kustomize overlays for dev / staging / prod)
+- [x] Kubernetes orchestration (base manifests: Deployment, Service, ConfigMap)
+- [x] `deploy/kubernetes/` layout (Kustomize overlays for dev / staging / prod)
 - [x] GitHub Actions (CI)
 - [ ] Conventional Commits (enforced in CI)
 - [ ] OpenTelemetry setup

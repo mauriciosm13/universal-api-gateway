@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Kubernetes base manifests with Kustomize overlays (dev, staging, prod) under `deploy/kubernetes/`
+- RFC 0003 and specification for M0 Kubernetes deployment
 - Manual dependency injection container (`internal/di`) with per-module providers and validated `Build()` graph
 - RFC 0002 and specification for M0 dependency injection
 - Hexagonal architecture scaffold (ports, stubs, composition root) for auth, routing, ratelimit, middleware, and observability modules

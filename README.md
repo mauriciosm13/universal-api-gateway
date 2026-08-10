@@ -12,6 +12,7 @@ This project is under active development. The current release focuses on project
 - Health endpoints: `/health`, `/health/live`, `/health/ready`
 - Environment-based configuration
 - Docker and Docker Compose
+- Kubernetes manifests (Kustomize base + dev/staging/prod overlays)
 - Structured JSON logging
 - GitHub Actions CI (test, vet, build + Docker build)
 
@@ -30,6 +31,17 @@ curl http://localhost:8080/health
 docker compose up --build
 curl http://localhost:8080/health/ready
 ```
+
+### Kubernetes
+
+```bash
+docker build -t universal-api-gateway:latest .
+kubectl apply -k deploy/kubernetes/overlays/dev
+kubectl port-forward -n gateway svc/universal-api-gateway 8080:8080
+curl http://localhost:8080/health/ready
+```
+
+See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 
 ### Configuration
 

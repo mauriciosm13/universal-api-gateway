@@ -47,7 +47,10 @@ internal/
 docs/
   rfcs/                         Design proposals
   specs/                        Technical specifications
-deploy/                         Deployment artifacts (future)
+deploy/
+  kubernetes/
+    base/               Deployment, Service, ConfigMap, Namespace
+    overlays/           dev, staging, prod (Kustomize)
 ```
 
 ## Layer Boundaries
@@ -111,4 +114,5 @@ Health routes (`/health`, `/health/live`, `/health/ready`) register directly in 
 - [RFC 0001 — Hexagonal Architecture Scaffold](rfcs/0001-hexagonal-architecture-scaffold.md)
 - [RFC 0002 — Dependency Injection](rfcs/0002-dependency-injection.md)
 - [Spec — Hexagonal Architecture Scaffold](specs/hexagonal-architecture-scaffold.md)
-- [Spec — Dependency Injection](specs/dependency-injection.md)
+- [RFC 0003 — Kubernetes Base Manifests](rfcs/0003-kubernetes-base-manifests.md)
+- [Spec — Kubernetes Base Manifests](specs/kubernetes-base-manifests.md)
