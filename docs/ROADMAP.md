@@ -9,7 +9,7 @@
 
 | Milestone | Status |
 |---|---|
-| M0 — Foundation | 🟡 In progress |
+| M0 — Foundation | 🟢 Complete |
 | M1 — Core Gateway | ⚪ Not started |
 | M2 — Auth & Authorization | ⚪ Not started |
 | M3 — Traffic Management | ⚪ Not started |
@@ -65,7 +65,7 @@ Every feature must satisfy at least one of:
 - [x] `deploy/kubernetes/` layout (Kustomize overlays for dev / staging / prod)
 - [x] GitHub Actions (CI)
 - [x] Conventional Commits (enforced in CI)
-- [ ] OpenTelemetry setup
+- [x] OpenTelemetry setup
 - [x] Project Bible
 - [x] Engineering Manual
 - [x] RFC process (templates)
@@ -74,8 +74,7 @@ Every feature must satisfy at least one of:
 - [x] Templates
 - [x] AGENTS.md
 - [x] Documentation (core docs)
-- [ ] Documentation website
-- [ ] Development environment (devcontainer / Makefile)
+- [x] Development environment (devcontainer / Makefile)
 
 **Success criteria:** Project can be cloned and developed by any engineer with minimal onboarding.
 
@@ -282,6 +281,7 @@ Every feature must satisfy at least one of:
 
 - [ ] Multi-tenant, billing, licensing, audit logs
 - [ ] SAML, OIDC, SSO, compliance, DR
+- [ ] Documentation website
 
 **Success criteria:** Enterprise adoption without extra tooling.
 

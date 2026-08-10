@@ -12,6 +12,7 @@ import (
 
 	"github.com/mauriciomendonca/universal-api-gateway/internal/app"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/observability/otelsetup"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/server"
 )
 
@@ -24,6 +25,17 @@ func main() {
 		logger.Error("failed to load config", "error", err)
 		os.Exit(1)
 	}
+
+	shutdownTelemetry, err := otelsetup.Install(context.Background(), cfg.Telemetry)
+	if err != nil {
+		logger.Error("failed to setup telemetry", "error", err)
+		os.Exit(1)
+	}
+	defer func() {
+		if err := shutdownTelemetry(context.Background()); err != nil {
+			logger.Error("telemetry shutdown failed", "error", err)
+		}
+	}()
 
 	deps, err := app.Build(cfg)
 	if err != nil {

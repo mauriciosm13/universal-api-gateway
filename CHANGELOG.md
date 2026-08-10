@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Makefile and Dev Container (`.devcontainer/`) for local development workflow
+- OpenTelemetry tracing bootstrap with stdout/OTLP exporters (disabled by default)
+- ADR 0001, RFC 0005, and specification for M0 OpenTelemetry setup
+- Go toolchain bumped to 1.25 (required by OTel SDK dependencies)
 - Conventional Commits enforcement in CI (commit messages and PR titles)
 - RFC 0004 for commit message validation workflow
 - Kubernetes base manifests with Kustomize overlays (dev, staging, prod) under `deploy/kubernetes/`

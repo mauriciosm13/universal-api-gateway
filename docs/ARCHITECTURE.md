@@ -39,6 +39,8 @@ internal/
   observability/
     port/                       Logger and Tracer interfaces
     stub/                       NoOp telemetry
+    adapter/                    OTel port.Tracer adapter
+    otelsetup/                  TracerProvider bootstrap
     module.go                   DI provider for observability
   config/                       Configuration from environment variables
   server/
@@ -115,4 +117,6 @@ Health routes (`/health`, `/health/live`, `/health/ready`) register directly in 
 - [RFC 0002 — Dependency Injection](rfcs/0002-dependency-injection.md)
 - [Spec — Hexagonal Architecture Scaffold](specs/hexagonal-architecture-scaffold.md)
 - [RFC 0003 — Kubernetes Base Manifests](rfcs/0003-kubernetes-base-manifests.md)
-- [Spec — Kubernetes Base Manifests](specs/kubernetes-base-manifests.md)
+- [RFC 0005 — OpenTelemetry Setup](rfcs/0005-opentelemetry-setup.md)
+- [ADR 0001 — OpenTelemetry Go SDK](adrs/0001-opentelemetry-go-sdk.md)
+- [Spec — OpenTelemetry Setup](specs/opentelemetry-setup.md)

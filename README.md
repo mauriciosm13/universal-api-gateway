@@ -13,6 +13,8 @@ This project is under active development. The current release focuses on project
 - Environment-based configuration
 - Docker and Docker Compose
 - Kubernetes manifests (Kustomize base + dev/staging/prod overlays)
+- Makefile and Dev Container for local development
+- OpenTelemetry tracing bootstrap (disabled by default)
 - Structured JSON logging
 - GitHub Actions CI (test, vet, build + Docker build)
 
@@ -52,6 +54,10 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_READ_TIMEOUT` | `15s` | Read timeout |
 | `GATEWAY_WRITE_TIMEOUT` | `15s` | Write timeout |
 | `GATEWAY_IDLE_TIMEOUT` | `60s` | Idle timeout |
+| `OTEL_SDK_DISABLED` | `true` | Disable OpenTelemetry tracing |
+| `OTEL_TRACES_EXPORTER` | `stdout` | Trace exporter when OTel enabled |
+
+See [Observability](docs/OBSERVABILITY.md) for all `OTEL_*` variables.
 
 ## Roadmap
 
@@ -69,11 +75,24 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full product vision and milestone
 ## Development
 
 ```bash
+make help     # list targets
+make test     # run tests
+make run      # start gateway
+make build    # build bin/gateway
+```
+
+Or without Make:
+
+```bash
 go test ./...
 go vet ./...
 gofmt -l .
 go build -o bin/gateway ./cmd/gateway
 ```
+
+### Dev Container
+
+Open the repository in VS Code / Cursor and select **Reopen in Container** (`.devcontainer/devcontainer.json` — Go 1.25, Docker-in-Docker, port 8080 forwarded).
 
 CI runs the same checks on every push and pull request to `main`.
 

@@ -3,4 +3,5 @@
 - No reverse proxy or routing yet
 - No authentication or rate limiting
 - Configuration is environment-only (no YAML)
-- No OpenTelemetry instrumentation yet
+- OpenTelemetry enabled but HTTP handlers not instrumented until M4
+- Documentation website deferred to M12

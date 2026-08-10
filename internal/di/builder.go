@@ -33,6 +33,11 @@ func NewBuilder(cfg config.Config, modules ...Module) *Builder {
 	return b
 }
 
+// Config returns the builder gateway configuration.
+func (b *Builder) Config() config.Config {
+	return b.cfg
+}
+
 // ProvideAuthenticator sets the authentication port implementation.
 func (b *Builder) ProvideAuthenticator(a authport.Authenticator) {
 	b.authenticator = a
