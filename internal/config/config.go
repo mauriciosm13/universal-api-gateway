@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	defaultHost              = "0.0.0.0"
-	defaultPort              = 8080
-	defaultReadTimeout       = 15 * time.Second
-	defaultWriteTimeout      = 15 * time.Second
-	defaultIdleTimeout       = 60 * time.Second
-	defaultServiceName       = "universal-api-gateway"
-	defaultTracesExporter    = "stdout"
-	defaultOTELSDKDisabled   = true
+	defaultHost            = "0.0.0.0"
+	defaultPort            = 8080
+	defaultReadTimeout     = 15 * time.Second
+	defaultWriteTimeout    = 15 * time.Second
+	defaultIdleTimeout     = 60 * time.Second
+	defaultServiceName     = "universal-api-gateway"
+	defaultTracesExporter  = "stdout"
+	defaultOTELSDKDisabled = true
 )
 
 // Config holds runtime configuration loaded from environment variables.
