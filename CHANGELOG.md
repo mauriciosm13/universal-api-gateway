@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Conventional Commits enforcement in CI (commit messages and PR titles)
+- RFC 0004 for commit message validation workflow
 - Kubernetes base manifests with Kustomize overlays (dev, staging, prod) under `deploy/kubernetes/`
 - RFC 0003 and specification for M0 Kubernetes deployment
 - Manual dependency injection container (`internal/di`) with per-module providers and validated `Build()` graph
