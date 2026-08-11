@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "status": "phase1",
+  "coverage": {
+    "global_minimum": 85,
+    "changed_code_minimum": 90,
+    "measured_global": 96.2
+  },
+  "notes": "Baseline established with Phase 1 Engineering Intelligence layer (RFC 0006)."
+}
