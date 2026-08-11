@@ -92,7 +92,7 @@ Config enters the graph via the `Builder` constructor (environment bootstrap), n
 
 Module registration order matters for overrides: later `Provide*` calls replace earlier values. Tests append a `di.FuncModule` to swap stubs without changing `main.go`.
 
-Health routes (`/health`, `/health/live`, `/health/ready`) register directly in `internal/server`. Non-health traffic is proxied via `gatewayHandler` when `GATEWAY_DEFAULT_UPSTREAM` is set; otherwise the catch-all returns 404.
+Health routes (`/health`, `/health/live`, `/health/ready`) dispatch in `internal/server/handler.go` via `rootHandler`. Non-health traffic is proxied via `gatewayHandler` when `GATEWAY_DEFAULT_UPSTREAM` is set; otherwise requests return 404. Route registration will move to a dedicated file (see roadmap).
 
 ## Target Modules
 

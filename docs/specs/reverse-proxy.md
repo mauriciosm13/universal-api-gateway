@@ -11,7 +11,8 @@ Enable HTTP reverse proxy for non-health traffic. The routing port resolves an u
 | `internal/config` | Load and validate `GATEWAY_DEFAULT_UPSTREAM` |
 | `internal/routing/adapter/static` | `StaticRouter` — resolve all requests to default upstream |
 | `internal/routing/module` | Wire `StaticRouter` or `NoOpRouter` based on config |
-| `internal/server/gateway` | Catch-all handler: resolve route, forward via ReverseProxy |
+| `internal/server/handler` | Root handler: dispatch health vs gateway traffic |
+| `internal/server/gateway` | Proxy handler: resolve route, forward via ReverseProxy |
 | `internal/server/request` | Convert `*http.Request` to `domain.Request` |
 
 ## API
@@ -48,14 +49,14 @@ func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 ## Data Flow
 
 ```text
-Client → server (/{path...})
-  → domain.Request from http.Request
-  → Router.Resolve()
-  → ReverseProxy.ServeHTTP → upstream
-  → response streamed to client
+Client → rootHandler
+  → GET /health* → local health handlers
+  → otherwise → gatewayHandler
+      → domain.Request from http.Request
+      → Router.Resolve()
+      → ReverseProxy.ServeHTTP → upstream
+      → response streamed to client
 ```
-
-Health paths (`/health`, `/health/live`, `/health/ready`) bypass the catch-all via ServeMux pattern precedence.
 
 ## Errors
 

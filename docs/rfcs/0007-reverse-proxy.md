@@ -47,14 +47,16 @@ internal/routing/adapter/static/
 
 ```text
 internal/server/
-  gateway.go   catch-all handler: Resolve → ReverseProxy
+  handler.go   rootHandler — dispatches health vs gateway traffic
+  gateway.go   proxy handler: Resolve → ReverseProxy
   request.go   http.Request → domain.Request conversion
 ```
 
 Registration in `server.New`:
 
-- Existing health routes (method-specific, higher precedence)
-- `/{path...}` catch-all for all methods → gateway handler
+- `rootHandler` serves all traffic
+- GET `/health`, `/health/live`, `/health/ready` handled locally
+- all other requests → gateway handler
 
 Flow:
 
@@ -84,7 +86,7 @@ Reverse proxy instances are cached per upstream URL string (`sync.Map`).
 
 | Risk | Mitigation |
 |---|---|
-| Catch-all intercepts health routes | Go 1.22+ ServeMux specificity; health patterns registered first |
+| Health routes intercepted by proxy | Explicit dispatch in `rootHandler` before gateway |
 | Invalid upstream at runtime | Validated at config load; StaticRouter constructor double-checks |
 | Upstream unreachable | ReverseProxy returns 502; covered in integration test |
 

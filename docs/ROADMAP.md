@@ -87,6 +87,7 @@ Every feature must satisfy at least one of:
 ### Routing
 
 - [x] Reverse proxy
+- [ ] Centralized HTTP route registration (`internal/server/routes.go`)
 - [ ] Path routing
 - [ ] Header routing
 - [ ] Host routing
