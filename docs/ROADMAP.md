@@ -64,6 +64,7 @@ Every feature must satisfy at least one of:
 - [x] Kubernetes orchestration (base manifests: Deployment, Service, ConfigMap)
 - [x] `deploy/kubernetes/` layout (Kustomize overlays for dev / staging / prod)
 - [x] GitHub Actions (CI)
+- [x] Engineering Intelligence quality layer (Phase 1 — RFC 0006)
 - [x] Conventional Commits (enforced in CI)
 - [x] OpenTelemetry setup
 - [x] Project Bible

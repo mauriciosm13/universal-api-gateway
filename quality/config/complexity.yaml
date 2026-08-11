@@ -1,0 +1,14 @@
+complexity:
+  cyclomatic:
+    warning: 10
+    fail: 15
+  cognitive:
+    warning: 12
+    fail: 20
+module_size:
+  file_lines:
+    warning: 300
+    fail: 500
+  function_lines:
+    warning: 30
+    fail: 50

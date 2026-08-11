@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Engineering Intelligence quality layer (Phase 1): `quality/` scripts, coverage gate, CI integration, RFC 0006
 - Makefile and Dev Container (`.devcontainer/`) for local development workflow
 - OpenTelemetry tracing bootstrap with stdout/OTLP exporters (disabled by default)
 - ADR 0001, RFC 0005, and specification for M0 OpenTelemetry setup

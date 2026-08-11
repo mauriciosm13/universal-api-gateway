@@ -28,6 +28,15 @@ func TestTracerStartSpanRecordsSpan(t *testing.T) {
 	}
 }
 
+func TestNewTracer(t *testing.T) {
+	t.Parallel()
+
+	tr := NewTracer()
+	if tr == nil {
+		t.Fatal("expected non-nil tracer")
+	}
+}
+
 func TestPortTracerStartSpan(t *testing.T) {
 	t.Parallel()
 

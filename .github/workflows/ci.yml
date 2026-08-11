@@ -24,20 +24,26 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Verify formatting
-        run: test -z "$(gofmt -l .)"
+      - name: Fetch base branch
+        if: github.event_name == 'pull_request'
+        run: git fetch origin "${{ github.base_ref }}"
 
-      - name: Vet
-        run: go vet ./...
-
-      - name: Test
-        run: go test -race -count=1 -coverprofile=coverage.out ./...
+      - name: Run quality gate
+        run: bash quality/scripts/quality-gate.sh
 
       - name: Upload coverage
         uses: actions/upload-artifact@v6
         with:
           name: coverage
           path: coverage.out
+
+      - name: Upload quality report
+        uses: actions/upload-artifact@v6
+        with:
+          name: quality-report
+          path: |
+            quality/reports/latest.md
+            quality/reports/latest.json
 
   build:
     name: Build

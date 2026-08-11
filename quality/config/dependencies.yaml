@@ -1,0 +1,4 @@
+dependencies:
+  max_direct_dependencies: 25
+  fail_on_known_high_vulnerability: true
+  fail_on_secrets: true

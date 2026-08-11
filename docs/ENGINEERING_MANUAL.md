@@ -18,6 +18,8 @@ Index of engineering documentation for **universal-api-gateway**.
 - [Performance](PERFORMANCE.md)
 - [Observability](OBSERVABILITY.md)
 - [Deployment](DEPLOYMENT.md)
+- [Engineering Intelligence](engineering-intelligence.md)
+- [Quality Integration](QUALITY_INTEGRATION.md)
 - [Review Checklist](REVIEW_CHECKLIST.md)
 
 ## Process Templates
@@ -36,6 +38,7 @@ See [AGENTS.md](../AGENTS.md) and `.ai/` for prompts, playbooks, and checklists.
 ```bash
 make help    # available targets
 make test    # run tests
+make quality # run engineering quality gate
 make run     # start gateway on :8080
 ```
 

@@ -1,0 +1,9 @@
+performance:
+  latency:
+    p95_regression_percent: 10
+    p99_regression_percent: 15
+  throughput:
+    regression_percent: -10
+  memory:
+    regression_percent: 15
+  fail_on_regression: true
