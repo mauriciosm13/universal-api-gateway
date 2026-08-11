@@ -19,16 +19,11 @@ type Server struct {
 
 // New creates a configured HTTP server with health endpoints.
 func New(deps Dependencies) *Server {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", handleHealth)
-	mux.HandleFunc("GET /health/live", handleLive)
-	mux.HandleFunc("GET /health/ready", handleReady)
-
 	return &Server{
 		deps: deps,
 		httpServer: &http.Server{
 			Addr:         deps.Config.Addr(),
-			Handler:      mux,
+			Handler:      newRootHandler(deps),
 			ReadTimeout:  deps.Config.ReadTimeout,
 			WriteTimeout: deps.Config.WriteTimeout,
 			IdleTimeout:  deps.Config.IdleTimeout,

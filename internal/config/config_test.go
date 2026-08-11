@@ -147,3 +147,43 @@ func TestEnvBoolInvalidFallback(t *testing.T) {
 		t.Fatal("expected invalid bool to fall back to default true")
 	}
 }
+
+func TestLoadDefaultUpstreamValid(t *testing.T) {
+	t.Setenv("GATEWAY_DEFAULT_UPSTREAM", "http://backend:8080")
+	t.Setenv("OTEL_TRACES_EXPORTER", "none")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+
+	if cfg.DefaultUpstream != "http://backend:8080" {
+		t.Fatalf("expected default upstream, got %q", cfg.DefaultUpstream)
+	}
+}
+
+func TestLoadDefaultUpstreamInvalid(t *testing.T) {
+	t.Setenv("GATEWAY_DEFAULT_UPSTREAM", "not-a-url")
+	t.Setenv("OTEL_TRACES_EXPORTER", "none")
+
+	_, err := Load()
+	if err == nil {
+		t.Fatal("expected error for invalid GATEWAY_DEFAULT_UPSTREAM")
+	}
+}
+
+func TestValidateUpstreamURL(t *testing.T) {
+	t.Parallel()
+
+	if err := ValidateUpstreamURL("http://localhost:8080"); err != nil {
+		t.Fatalf("valid http URL: %v", err)
+	}
+
+	if err := ValidateUpstreamURL("https://api.example.com"); err != nil {
+		t.Fatalf("valid https URL: %v", err)
+	}
+
+	if err := ValidateUpstreamURL("ftp://files.example.com"); err == nil {
+		t.Fatal("expected error for ftp scheme")
+	}
+}

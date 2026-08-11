@@ -10,7 +10,7 @@
 | Milestone | Status |
 |---|---|
 | M0 — Foundation | 🟢 Complete |
-| M1 — Core Gateway | ⚪ Not started |
+| M1 — Core Gateway | 🟡 In progress |
 | M2 — Auth & Authorization | ⚪ Not started |
 | M3 — Traffic Management | ⚪ Not started |
 | M4 — Observability | ⚪ Not started |
@@ -87,7 +87,8 @@ Every feature must satisfy at least one of:
 
 ### Routing
 
-- [ ] Reverse proxy
+- [x] Reverse proxy
+- [ ] Centralized HTTP route registration (`internal/server/routes.go`)
 - [ ] Path routing
 - [ ] Header routing
 - [ ] Host routing

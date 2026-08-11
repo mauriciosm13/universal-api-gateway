@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- HTTP reverse proxy with default upstream via `GATEWAY_DEFAULT_UPSTREAM` (RFC 0007)
+- Static routing adapter (`internal/routing/adapter/static`) for single-upstream proxying
+- RFC 0007 and specification for M1 reverse proxy
 - Engineering Intelligence quality layer (Phase 1): `quality/` scripts, coverage gate, CI integration, RFC 0006
 - Makefile and Dev Container (`.devcontainer/`) for local development workflow
 - OpenTelemetry tracing bootstrap with stdout/OTLP exporters (disabled by default)
