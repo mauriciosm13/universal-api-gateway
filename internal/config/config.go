@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -21,12 +22,13 @@ const (
 
 // Config holds runtime configuration loaded from environment variables.
 type Config struct {
-	Host         string
-	Port         int
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	IdleTimeout  time.Duration
-	Telemetry    TelemetryConfig
+	Host            string
+	Port            int
+	ReadTimeout     time.Duration
+	WriteTimeout    time.Duration
+	IdleTimeout     time.Duration
+	DefaultUpstream string
+	Telemetry       TelemetryConfig
 }
 
 // TelemetryConfig holds OpenTelemetry settings from OTEL_* environment variables.
@@ -49,14 +51,42 @@ func Load() (Config, error) {
 		return Config{}, err
 	}
 
+	defaultUpstream := os.Getenv("GATEWAY_DEFAULT_UPSTREAM")
+	if defaultUpstream != "" {
+		if err := ValidateUpstreamURL(defaultUpstream); err != nil {
+			return Config{}, fmt.Errorf("invalid GATEWAY_DEFAULT_UPSTREAM: %w", err)
+		}
+	}
+
 	return Config{
-		Host:         envString("GATEWAY_HOST", defaultHost),
-		Port:         port,
-		ReadTimeout:  envDuration("GATEWAY_READ_TIMEOUT", defaultReadTimeout),
-		WriteTimeout: envDuration("GATEWAY_WRITE_TIMEOUT", defaultWriteTimeout),
-		IdleTimeout:  envDuration("GATEWAY_IDLE_TIMEOUT", defaultIdleTimeout),
-		Telemetry:    telemetry,
+		Host:            envString("GATEWAY_HOST", defaultHost),
+		Port:            port,
+		ReadTimeout:     envDuration("GATEWAY_READ_TIMEOUT", defaultReadTimeout),
+		WriteTimeout:    envDuration("GATEWAY_WRITE_TIMEOUT", defaultWriteTimeout),
+		IdleTimeout:     envDuration("GATEWAY_IDLE_TIMEOUT", defaultIdleTimeout),
+		DefaultUpstream: defaultUpstream,
+		Telemetry:       telemetry,
 	}, nil
+}
+
+// ValidateUpstreamURL checks that raw is an absolute http or https URL with a host.
+func ValidateUpstreamURL(raw string) error {
+	parsed, err := url.Parse(raw)
+	if err != nil {
+		return fmt.Errorf("parse URL: %w", err)
+	}
+
+	switch parsed.Scheme {
+	case "http", "https":
+	default:
+		return fmt.Errorf("scheme must be http or https, got %q", parsed.Scheme)
+	}
+
+	if parsed.Host == "" {
+		return fmt.Errorf("host is required")
+	}
+
+	return nil
 }
 
 func loadTelemetry() (TelemetryConfig, error) {

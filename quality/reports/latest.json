@@ -1,0 +1,9 @@
+{
+  "status": "PHASE1",
+  "coverage": 91.9,
+  "coverage_minimum": 85,
+  "changed_code_minimum": 90,
+  "mutation_score": null,
+  "security_issues": null,
+  "notes": "Bootstrap report — expand in Phase 6"
+}

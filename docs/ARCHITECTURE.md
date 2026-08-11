@@ -27,6 +27,7 @@ internal/
   routing/
     port/                       Router interface
     stub/                       NoOpRouter
+    adapter/static/             StaticRouter (default upstream)
     module.go                   DI provider for routing
   ratelimit/
     port/                       Limiter interface
@@ -91,14 +92,14 @@ Config enters the graph via the `Builder` constructor (environment bootstrap), n
 
 Module registration order matters for overrides: later `Provide*` calls replace earlier values. Tests append a `di.FuncModule` to swap stubs without changing `main.go`.
 
-Health routes (`/health`, `/health/live`, `/health/ready`) register directly in `internal/server`. Gateway pipeline wiring for proxied traffic is deferred to M1.
+Health routes (`/health`, `/health/live`, `/health/ready`) register directly in `internal/server`. Non-health traffic is proxied via `gatewayHandler` when `GATEWAY_DEFAULT_UPSTREAM` is set; otherwise the catch-all returns 404.
 
 ## Target Modules
 
 | Module | Responsibility | M0 status |
 |---|---|---|
 | `auth` | JWT, OAuth2, API keys, mTLS | Port + NoOp stub + DI module |
-| `routing` | Reverse proxy, path/host routing | Port + NoOp stub + DI module |
+| `routing` | Reverse proxy, path/host routing | Port + StaticRouter adapter + DI module |
 | `ratelimit` | Token bucket, sliding window | Port + NoOp stub + DI module |
 | `middleware` | Request/response pipeline | Port + passthrough stub + DI module |
 | `observability` | Logs, metrics, traces | Port + NoOp stub + DI module |
@@ -118,5 +119,7 @@ Health routes (`/health`, `/health/live`, `/health/ready`) register directly in 
 - [Spec — Hexagonal Architecture Scaffold](specs/hexagonal-architecture-scaffold.md)
 - [RFC 0003 — Kubernetes Base Manifests](rfcs/0003-kubernetes-base-manifests.md)
 - [RFC 0005 — OpenTelemetry Setup](rfcs/0005-opentelemetry-setup.md)
+- [RFC 0007 — Reverse Proxy](rfcs/0007-reverse-proxy.md)
+- [Spec — Reverse Proxy](specs/reverse-proxy.md)
 - [ADR 0001 — OpenTelemetry Go SDK](adrs/0001-opentelemetry-go-sdk.md)
 - [Spec — OpenTelemetry Setup](specs/opentelemetry-setup.md)

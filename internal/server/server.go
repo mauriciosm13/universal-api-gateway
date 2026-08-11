@@ -23,6 +23,7 @@ func New(deps Dependencies) *Server {
 	mux.HandleFunc("GET /health", handleHealth)
 	mux.HandleFunc("GET /health/live", handleLive)
 	mux.HandleFunc("GET /health/ready", handleReady)
+	mux.Handle("/{path...}", newGatewayHandler(deps))
 
 	return &Server{
 		deps: deps,

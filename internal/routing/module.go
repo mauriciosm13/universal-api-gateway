@@ -1,7 +1,10 @@
 package routing
 
 import (
+	"fmt"
+
 	"github.com/mauriciomendonca/universal-api-gateway/internal/di"
+	staticrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/static"
 	routingstub "github.com/mauriciomendonca/universal-api-gateway/internal/routing/stub"
 )
 
@@ -10,5 +13,16 @@ type Module struct{}
 
 // Register implements di.Module.
 func (Module) Register(b *di.Builder) {
-	b.ProvideRouter(routingstub.NewNoOpRouter())
+	upstream := b.Config().DefaultUpstream
+	if upstream == "" {
+		b.ProvideRouter(routingstub.NewNoOpRouter())
+		return
+	}
+
+	router, err := staticrouter.NewRouter(upstream)
+	if err != nil {
+		panic(fmt.Sprintf("routing: static router: %v", err))
+	}
+
+	b.ProvideRouter(router)
 }
