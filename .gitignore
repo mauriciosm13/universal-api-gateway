@@ -10,6 +10,7 @@
 *.test
 coverage.out
 coverage.html
+quality/reports/
 
 # Go
 vendor/

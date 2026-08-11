@@ -1,4 +1,4 @@
-.PHONY: help run build test vet fmt fmt-check clean docker-build k8s-validate
+.PHONY: help run build test vet fmt fmt-check quality clean docker-build k8s-validate
 
 GOBIN ?= $(shell go env GOPATH)/bin
 GATEWAY_PORT ?= 8080
@@ -24,8 +24,11 @@ fmt: ## Format Go source files
 fmt-check: ## Fail if Go files are not formatted
 	@test -z "$$(gofmt -l .)"
 
+quality: ## Run the full engineering quality gate
+	bash quality/scripts/quality-gate.sh
+
 clean: ## Remove build artifacts
-	rm -rf bin/ coverage.out
+	rm -rf bin/ coverage.out quality/reports
 
 docker-build: ## Build Docker image
 	docker build -t universal-api-gateway:local .

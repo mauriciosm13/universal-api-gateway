@@ -18,6 +18,9 @@ Provide reusable authentication, routing, rate limiting, and observability for e
 - Infrastructure as Code
 - Hexagonal Architecture
 - Twelve-Factor App
+- Engineering Intelligence First
+
+> AI can propose code. Automated engineering gates decide whether the code is acceptable.
 
 ## Quality Gates
 
@@ -29,6 +32,7 @@ Every feature must pass:
 - Documentation
 - Benchmarks (when performance-critical)
 - Observability (metrics and tracing when applicable)
+- Automated quality gate (`make quality` / CI)
 
 ## Product Philosophy
 

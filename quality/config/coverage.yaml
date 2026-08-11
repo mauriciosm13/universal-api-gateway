@@ -1,0 +1,5 @@
+coverage:
+  global_minimum: 85
+  changed_code_minimum: 90
+  fail_on_regression: true
+  allowed_drop_percentage: 0
