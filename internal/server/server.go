@@ -23,7 +23,7 @@ func New(deps Dependencies) *Server {
 		deps: deps,
 		httpServer: &http.Server{
 			Addr:         deps.Config.Addr(),
-			Handler:      newRootHandler(deps),
+			Handler:      newRoutes(deps),
 			ReadTimeout:  deps.Config.ReadTimeout,
 			WriteTimeout: deps.Config.WriteTimeout,
 			IdleTimeout:  deps.Config.IdleTimeout,

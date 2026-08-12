@@ -10,7 +10,7 @@ import (
 	routingstub "github.com/mauriciomendonca/universal-api-gateway/internal/routing/stub"
 )
 
-func TestRootHandlerDispatchesHealth(t *testing.T) {
+func TestRoutesDispatchesHealth(t *testing.T) {
 	t.Parallel()
 
 	deps := Dependencies{
@@ -22,7 +22,7 @@ func TestRootHandlerDispatchesHealth(t *testing.T) {
 		Router: routingstub.NewNoOpRouter(),
 	}
 
-	handler := newRootHandler(deps)
+	handler := newRoutes(deps)
 
 	for _, path := range []string{"/health", "/health/live", "/health/ready"} {
 		req := httptest.NewRequest(http.MethodGet, path, nil)
@@ -36,7 +36,7 @@ func TestRootHandlerDispatchesHealth(t *testing.T) {
 	}
 }
 
-func TestRootHandlerNonHealthUsesGateway(t *testing.T) {
+func TestRoutesNonHealthUsesGateway(t *testing.T) {
 	t.Parallel()
 
 	deps := Dependencies{
@@ -48,7 +48,7 @@ func TestRootHandlerNonHealthUsesGateway(t *testing.T) {
 		Router: routingstub.NewNoOpRouter(),
 	}
 
-	handler := newRootHandler(deps)
+	handler := newRoutes(deps)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/users", nil)
 	rec := httptest.NewRecorder()
@@ -60,7 +60,7 @@ func TestRootHandlerNonHealthUsesGateway(t *testing.T) {
 	}
 }
 
-func TestRootHandlerNonGetHealthUsesGateway(t *testing.T) {
+func TestRoutesNonGetHealthUsesGateway(t *testing.T) {
 	t.Parallel()
 
 	deps := Dependencies{
@@ -72,7 +72,7 @@ func TestRootHandlerNonGetHealthUsesGateway(t *testing.T) {
 		Router: routingstub.NewNoOpRouter(),
 	}
 
-	handler := newRootHandler(deps)
+	handler := newRoutes(deps)
 
 	req := httptest.NewRequest(http.MethodPost, "/health", nil)
 	rec := httptest.NewRecorder()

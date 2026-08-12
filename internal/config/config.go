@@ -28,6 +28,7 @@ type Config struct {
 	WriteTimeout    time.Duration
 	IdleTimeout     time.Duration
 	DefaultUpstream string
+	PathRoutes      []PathRoute
 	Telemetry       TelemetryConfig
 }
 
@@ -58,6 +59,11 @@ func Load() (Config, error) {
 		}
 	}
 
+	pathRoutes, err := ParsePathRoutes(os.Getenv("GATEWAY_PATH_ROUTES"))
+	if err != nil {
+		return Config{}, fmt.Errorf("invalid GATEWAY_PATH_ROUTES: %w", err)
+	}
+
 	return Config{
 		Host:            envString("GATEWAY_HOST", defaultHost),
 		Port:            port,
@@ -65,6 +71,7 @@ func Load() (Config, error) {
 		WriteTimeout:    envDuration("GATEWAY_WRITE_TIMEOUT", defaultWriteTimeout),
 		IdleTimeout:     envDuration("GATEWAY_IDLE_TIMEOUT", defaultIdleTimeout),
 		DefaultUpstream: defaultUpstream,
+		PathRoutes:      pathRoutes,
 		Telemetry:       telemetry,
 	}, nil
 }
