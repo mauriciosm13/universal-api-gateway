@@ -1,7 +1,8 @@
 # Universal API Gateway — Product Roadmap
 
 > **Status:** v0.1 — foundation in progress  
-> **Vision:** Build a production-grade, cloud-native, cloud-agnostic API Gateway that evolves into a complete API Platform and Developer Platform.
+> **Vision:** Build a production-grade, cloud-native, cloud-agnostic API Gateway that evolves into a complete API Platform and Developer Platform.  
+> **MVP track:** [MVP_SCOPE.md](MVP_SCOPE.md) — accelerated path through M3 (~8 weeks)
 
 ---
 
@@ -90,7 +91,20 @@ Every feature must satisfy at least one of:
 - [x] Reverse proxy
 - [x] Centralized HTTP route registration (`internal/server/routes.go`)
 - [x] Path routing
-- [ ] JSON error responses (structured 4xx/5xx body with `Content-Type: application/json`)
+- [x] Header routing
+- [x] Host routing
+- [x] Method routing
+- [ ] Regex routing
+- [ ] URL rewrite
+- [ ] Request forwarding
+- [ ] Response transformation
+
+### Middleware Pipeline
+
+- [x] Request middleware
+- [x] Error middleware
+- [x] JSON error responses (structured 4xx/5xx body with `Content-Type: application/json`)
+- [ ] Response middleware
 
 ### Configuration
 

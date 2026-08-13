@@ -30,6 +30,8 @@ type Config struct {
 	DefaultUpstream string
 	PathRoutes      []PathRoute
 	HeaderRoutes    []HeaderRoute
+	HostRoutes      []HostRoute
+	MethodRoutes    []MethodRoute
 	Telemetry       TelemetryConfig
 }
 
@@ -70,6 +72,16 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("invalid GATEWAY_HEADER_ROUTES: %w", err)
 	}
 
+	hostRoutes, err := ParseHostRoutes(os.Getenv("GATEWAY_HOST_ROUTES"))
+	if err != nil {
+		return Config{}, fmt.Errorf("invalid GATEWAY_HOST_ROUTES: %w", err)
+	}
+
+	methodRoutes, err := ParseMethodRoutes(os.Getenv("GATEWAY_METHOD_ROUTES"))
+	if err != nil {
+		return Config{}, fmt.Errorf("invalid GATEWAY_METHOD_ROUTES: %w", err)
+	}
+
 	return Config{
 		Host:            envString("GATEWAY_HOST", defaultHost),
 		Port:            port,
@@ -79,6 +91,8 @@ func Load() (Config, error) {
 		DefaultUpstream: defaultUpstream,
 		PathRoutes:      pathRoutes,
 		HeaderRoutes:    headerRoutes,
+		HostRoutes:      hostRoutes,
+		MethodRoutes:    methodRoutes,
 		Telemetry:       telemetry,
 	}, nil
 }

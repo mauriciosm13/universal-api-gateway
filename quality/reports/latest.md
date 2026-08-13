@@ -7,7 +7,7 @@ Status: PHASE1
 | Formatting | PASS (when gate completes) |
 | Static analysis | PASS (when gate completes) |
 | Unit tests | PASS (when gate completes) |
-| Global coverage | 91.7% / 85% minimum |
+| Global coverage | 94.7% / 85% minimum |
 | Changed packages | 90% soft minimum on PRs |
 | Mutation | TODO Phase 3 |
 | Integration / E2E | TODO Phase 2 |

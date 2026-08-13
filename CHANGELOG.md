@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Host routing via `GATEWAY_HOST_ROUTES` and method routing via `GATEWAY_METHOD_ROUTES`
+- Request middleware pipeline with auth and rate-limit hooks (no-op passthrough until M2/M3)
+- RFC MVP-1 and middleware pipeline specification
 - Header-based routing via `GATEWAY_HEADER_ROUTES` with router chain precedence (RFC 0009)
 - JSON error responses for gateway-generated 4xx/5xx errors
 - Chain routing adapter (`internal/routing/adapter/chain`) and header adapter

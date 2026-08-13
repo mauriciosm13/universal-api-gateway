@@ -59,6 +59,8 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_DEFAULT_UPSTREAM` | — | Default upstream URL for reverse proxy |
 | `GATEWAY_PATH_ROUTES` | — | Comma-separated path routes: `/api=http://backend:8080` |
 | `GATEWAY_HEADER_ROUTES` | — | Comma-separated header routes: `X-Version=v1=http://v1:8080` |
+| `GATEWAY_HOST_ROUTES` | — | Comma-separated host routes: `api.example.com=http://api:8080` |
+| `GATEWAY_METHOD_ROUTES` | — | Comma-separated method routes: `GET=http://get:8080` |
 | `OTEL_SDK_DISABLED` | `true` | Disable OpenTelemetry tracing |
 | `OTEL_TRACES_EXPORTER` | `stdout` | Trace exporter when OTel enabled |
 
@@ -68,6 +70,8 @@ See [Observability](docs/OBSERVABILITY.md) for all `OTEL_*` variables.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full product vision and milestone progress.
 
+**MVP track (M0–M3):** see [docs/MVP_SCOPE.md](docs/MVP_SCOPE.md) for accelerated scope and 8-week backlog.
+
 ## Documentation
 
 | Document | Description |
@@ -76,6 +80,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full product vision and milestone
 | [Architecture](docs/ARCHITECTURE.md) | Hexagonal architecture overview |
 | [Engineering Manual](docs/ENGINEERING_MANUAL.md) | Development process index |
 | [Deployment](docs/DEPLOYMENT.md) | Docker, Kubernetes, cloud targets |
+| [MVP Scope](docs/MVP_SCOPE.md) | Accelerated M0–M3 scope and 8-week backlog |
 
 ## Development
 

@@ -68,6 +68,16 @@ func (b *Builder) ProvideTracer(t observabilityport.Tracer) {
 	b.tracer = t
 }
 
+// Authenticator returns the registered authenticator, if any.
+func (b *Builder) Authenticator() authport.Authenticator {
+	return b.authenticator
+}
+
+// Limiter returns the registered limiter, if any.
+func (b *Builder) Limiter() ratelimitport.Limiter {
+	return b.limiter
+}
+
 // Build validates the graph and returns gateway dependencies.
 func (b *Builder) Build() (deps.Gateway, error) {
 	if err := b.validate(); err != nil {

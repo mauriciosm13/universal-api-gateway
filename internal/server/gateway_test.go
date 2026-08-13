@@ -1,7 +1,9 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -9,10 +11,15 @@ import (
 	"time"
 
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/domain"
+	requestpipeline "github.com/mauriciomendonca/universal-api-gateway/internal/middleware/adapter/request"
 	chainrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/chain"
 	headerrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/header"
+	hostrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/host"
+	methodrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/method"
 	pathrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/path"
 	staticrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/static"
+	routingport "github.com/mauriciomendonca/universal-api-gateway/internal/routing/port"
 	routingstub "github.com/mauriciomendonca/universal-api-gateway/internal/routing/stub"
 )
 
@@ -37,16 +44,13 @@ func TestGatewayProxiesToUpstream(t *testing.T) {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
 
-	deps := Dependencies{
-		Config: config.Config{
-			Host:         "127.0.0.1",
-			Port:         0,
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: router,
-	}
+	deps := newTestDependencies(config.Config{
+		Host:         "127.0.0.1",
+		Port:         0,
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, router)
 
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
@@ -78,16 +82,13 @@ func TestGatewayProxiesToUpstream(t *testing.T) {
 func TestGatewayNoRouteReturns404(t *testing.T) {
 	t.Parallel()
 
-	deps := Dependencies{
-		Config: config.Config{
-			Host:         "127.0.0.1",
-			Port:         0,
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: routingstub.NewNoOpRouter(),
-	}
+	deps := newTestDependencies(config.Config{
+		Host:         "127.0.0.1",
+		Port:         0,
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, routingstub.NewNoOpRouter())
 
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
@@ -129,16 +130,13 @@ func TestHealthEndpointsBypassProxy(t *testing.T) {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
 
-	deps := Dependencies{
-		Config: config.Config{
-			Host:         "127.0.0.1",
-			Port:         0,
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: router,
-	}
+	deps := newTestDependencies(config.Config{
+		Host:         "127.0.0.1",
+		Port:         0,
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, router)
 
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
@@ -176,14 +174,11 @@ func TestGatewayPathRouting(t *testing.T) {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
 
-	deps := Dependencies{
-		Config: config.Config{
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: router,
-	}
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, router)
 
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
@@ -240,14 +235,11 @@ func TestGatewayHeaderRouting(t *testing.T) {
 
 	router := chainrouter.NewRouter(headerRouter, pathRouter)
 
-	deps := Dependencies{
-		Config: config.Config{
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: router,
-	}
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, router)
 
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
@@ -281,6 +273,61 @@ func TestGatewayHeaderRouting(t *testing.T) {
 	}
 }
 
+func TestGatewayHostRouting(t *testing.T) {
+	t.Parallel()
+
+	hostUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = io.WriteString(w, "host-upstream")
+	}))
+	t.Cleanup(hostUpstream.Close)
+
+	pathUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = io.WriteString(w, "path-upstream")
+	}))
+	t.Cleanup(pathUpstream.Close)
+
+	hostRouter, err := hostrouter.NewRouter([]config.HostRoute{
+		{Host: "api.example.com", Upstream: hostUpstream.URL},
+	})
+	if err != nil {
+		t.Fatalf("host NewRouter() error = %v", err)
+	}
+
+	pathRouter, err := pathrouter.NewRouter([]config.PathRoute{
+		{Prefix: "/api", Upstream: pathUpstream.URL},
+	}, "")
+	if err != nil {
+		t.Fatalf("path NewRouter() error = %v", err)
+	}
+
+	router := chainrouter.NewRouter(hostRouter, pathRouter)
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, router)
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	req, err := http.NewRequest(http.MethodGet, srv.URL+"/api/users", nil)
+	if err != nil {
+		t.Fatalf("NewRequest() error = %v", err)
+	}
+	req.Host = "api.example.com"
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("Do() error = %v", err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if string(body) != "host-upstream" {
+		t.Fatalf("body = %q, want host-upstream", string(body))
+	}
+}
+
 func TestToDomainRequest(t *testing.T) {
 	t.Parallel()
 
@@ -307,5 +354,205 @@ func TestToDomainRequest(t *testing.T) {
 
 	if got := domainReq.Headers["X-Request-Id"]; len(got) != 1 || got[0] != "abc-123" {
 		t.Fatalf("headers = %v, want X-Request-Id=[abc-123]", domainReq.Headers)
+	}
+}
+
+func TestGatewayPipelineError(t *testing.T) {
+	t.Parallel()
+
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, routingstub.NewNoOpRouter())
+	deps.Pipeline = errorPipeline{}
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	resp, err := http.Get(srv.URL + "/api")
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	defer resp.Body.Close()
+
+	assertJSONError(t, resp, http.StatusInternalServerError, "pipeline error")
+}
+
+func TestGatewayRoutingError(t *testing.T) {
+	t.Parallel()
+
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, errorRouter{})
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	resp, err := http.Get(srv.URL + "/api")
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	defer resp.Body.Close()
+
+	assertJSONError(t, resp, http.StatusInternalServerError, "routing error")
+}
+
+func TestGatewayInvalidUpstream(t *testing.T) {
+	t.Parallel()
+
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, badUpstreamRouter{})
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	resp, err := http.Get(srv.URL + "/api")
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	defer resp.Body.Close()
+
+	assertJSONError(t, resp, http.StatusInternalServerError, "invalid upstream")
+}
+
+func TestGatewayRateLimitBlocked(t *testing.T) {
+	t.Parallel()
+
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, routingstub.NewNoOpRouter())
+	deps.Pipeline = requestpipeline.NewPipeline(
+		requestpipeline.ContinueHandler,
+		requestpipeline.NewErrorMiddleware(),
+		requestpipeline.NewRateLimitMiddleware(blockGatewayLimiter{}),
+	)
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	resp, err := http.Get(srv.URL + "/api")
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	defer resp.Body.Close()
+
+	assertJSONError(t, resp, http.StatusTooManyRequests, "rate limit exceeded")
+}
+
+func TestGatewayMethodRouting(t *testing.T) {
+	t.Parallel()
+
+	postUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = io.WriteString(w, "post-upstream")
+	}))
+	t.Cleanup(postUpstream.Close)
+
+	getUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = io.WriteString(w, "get-upstream")
+	}))
+	t.Cleanup(getUpstream.Close)
+
+	methodRouter, err := methodrouter.NewRouter([]config.MethodRoute{
+		{Method: "POST", Upstream: postUpstream.URL},
+	})
+	if err != nil {
+		t.Fatalf("method NewRouter() error = %v", err)
+	}
+
+	pathRouter, err := pathrouter.NewRouter([]config.PathRoute{
+		{Prefix: "/api", Upstream: getUpstream.URL},
+	}, "")
+	if err != nil {
+		t.Fatalf("path NewRouter() error = %v", err)
+	}
+
+	router := chainrouter.NewRouter(methodRouter, pathRouter)
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, router)
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	req, err := http.NewRequest(http.MethodPost, srv.URL+"/api/items", nil)
+	if err != nil {
+		t.Fatalf("NewRequest() error = %v", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("Do(POST) error = %v", err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if string(body) != "post-upstream" {
+		t.Fatalf("POST body = %q, want post-upstream", string(body))
+	}
+
+	resp, err = http.Get(srv.URL + "/api/items")
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	body, _ = io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if string(body) != "get-upstream" {
+		t.Fatalf("GET body = %q, want get-upstream", string(body))
+	}
+}
+
+type errorPipeline struct{}
+
+func (errorPipeline) Execute(_ context.Context, _ domain.Request) (domain.Response, error) {
+	return domain.Response{}, errors.New("pipeline failed")
+}
+
+type errorRouter struct{}
+
+func (errorRouter) Resolve(_ context.Context, _ domain.Request) (routingport.Route, error) {
+	return routingport.Route{}, errors.New("routing failed")
+}
+
+type badUpstreamRouter struct{}
+
+func (badUpstreamRouter) Resolve(_ context.Context, _ domain.Request) (routingport.Route, error) {
+	return routingport.Route{Upstream: "://invalid"}, nil
+}
+
+type blockGatewayLimiter struct{}
+
+func (blockGatewayLimiter) Allow(context.Context, string) (bool, error) {
+	return false, nil
+}
+
+func assertJSONError(t *testing.T, resp *http.Response, wantStatus int, wantMessage string) {
+	t.Helper()
+
+	if resp.StatusCode != wantStatus {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, wantStatus)
+	}
+
+	if ct := resp.Header.Get("Content-Type"); ct != "application/json" {
+		t.Fatalf("Content-Type = %q, want application/json", ct)
+	}
+
+	var body errorBody
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		t.Fatalf("Decode() error = %v", err)
+	}
+
+	if body.Code != wantStatus || body.Message != wantMessage {
+		t.Fatalf("body = %+v, want code=%d message=%q", body, wantStatus, wantMessage)
 	}
 }
