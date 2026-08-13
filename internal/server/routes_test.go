@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -57,6 +58,19 @@ func TestRoutesNonHealthUsesGateway(t *testing.T) {
 
 	if rec.Code != http.StatusNotFound {
 		t.Fatalf("status = %d, want 404", rec.Code)
+	}
+
+	if ct := rec.Header().Get("Content-Type"); ct != "application/json" {
+		t.Fatalf("Content-Type = %q, want application/json", ct)
+	}
+
+	var body errorBody
+	if err := json.NewDecoder(rec.Body).Decode(&body); err != nil {
+		t.Fatalf("Decode() error = %v", err)
+	}
+
+	if body.Code != 404 || body.Message != "no route matched" {
+		t.Fatalf("body = %+v", body)
 	}
 }
 

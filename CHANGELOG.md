@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Gateway-generated 4xx/5xx error bodies are JSON (`Content-Type: application/json`) instead of plain text
+
 ### Added
 
+- Header-based routing via `GATEWAY_HEADER_ROUTES` with router chain precedence (RFC 0009)
+- JSON error responses for gateway-generated 4xx/5xx errors
+- Chain routing adapter (`internal/routing/adapter/chain`) and header adapter
+- RFC 0009 and specifications for header routing and JSON errors
 - Prefix-based path routing via `GATEWAY_PATH_ROUTES` with optional default upstream fallback (RFC 0008)
 - Centralized HTTP route registration in `internal/server/routes.go`
 - Path routing adapter (`internal/routing/adapter/path`)

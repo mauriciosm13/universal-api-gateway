@@ -32,14 +32,13 @@ M1 reverse proxy (RFC 0007) forwards all traffic to a single upstream. Productio
 - Each entry: path prefix (must start with `/`) and validated upstream URL, separated by the first `=`
 - `GATEWAY_DEFAULT_UPSTREAM` — unchanged; used as fallback when path routes are configured
 
-Router selection in `routing.Module`:
+Router selection in `routing.Module` (see RFC 0009 for chain precedence):
 
-| Path routes | Default upstream | Router |
-|---|---|---|
-| empty | empty | `NoOpRouter` |
-| empty | set | `StaticRouter` |
-| set | empty | `PathRouter` (unmatched → 404) |
-| set | set | `PathRouter` with default fallback |
+| Header routes | Path routes | Default upstream | Router |
+|---|---|---|---|
+| empty | empty | empty | `NoOpRouter` |
+| empty | empty | set | `StaticRouter` |
+| any | any | any | `ChainRouter` (header → path → static) |
 
 ### Path router adapter
 

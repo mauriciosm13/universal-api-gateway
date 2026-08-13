@@ -24,17 +24,17 @@ func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	route, err := h.deps.Router.Resolve(r.Context(), req)
 	if errors.Is(err, routingport.ErrNoRoute) {
-		http.Error(w, "no route matched", http.StatusNotFound)
+		writeJSONError(w, http.StatusNotFound, "no route matched")
 		return
 	}
 	if err != nil {
-		http.Error(w, "routing error", http.StatusInternalServerError)
+		writeJSONError(w, http.StatusInternalServerError, "routing error")
 		return
 	}
 
 	proxy, err := h.proxyFor(route.Upstream)
 	if err != nil {
-		http.Error(w, "invalid upstream", http.StatusInternalServerError)
+		writeJSONError(w, http.StatusInternalServerError, "invalid upstream")
 		return
 	}
 

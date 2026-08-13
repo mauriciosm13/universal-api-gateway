@@ -62,8 +62,8 @@ Client → rootHandler
 
 | Condition | HTTP status | Body |
 |---|---|---|
-| No route (`ErrNoRoute`) | 404 | `no route matched` |
-| Resolve error (other) | 500 | `routing error` |
+| No route (`ErrNoRoute`) | 404 | JSON — see [JSON Error Responses](json-error-responses.md) |
+| Resolve error (other) | 500 | JSON — see [JSON Error Responses](json-error-responses.md) |
 | Upstream unreachable | 502 | (stdlib ReverseProxy) |
 | Invalid upstream in config | — | process exit at startup |
 

@@ -90,19 +90,6 @@ Every feature must satisfy at least one of:
 - [x] Reverse proxy
 - [x] Centralized HTTP route registration (`internal/server/routes.go`)
 - [x] Path routing
-- [ ] Header routing
-- [ ] Host routing
-- [ ] Method routing
-- [ ] Regex routing
-- [ ] URL rewrite
-- [ ] Request forwarding
-- [ ] Response transformation
-
-### Middleware Pipeline
-
-- [ ] Request middleware
-- [ ] Response middleware
-- [ ] Error middleware
 - [ ] JSON error responses (structured 4xx/5xx body with `Content-Type: application/json`)
 
 ### Configuration

@@ -80,7 +80,7 @@ if git rev-parse --verify "$COMPARE_REF" >/dev/null 2>&1; then
     while IFS= read -r dir; do
       [[ -z "$dir" ]] && continue
       PKG_PROFILE="$(mktemp)"
-      PKG_COV="$(go test -count=1 -coverprofile="$PKG_PROFILE" "./${dir}/..." 2>/dev/null \
+      PKG_COV="$(go test -count=1 -coverprofile="$PKG_PROFILE" "./${dir}/..." >/dev/null 2>&1 \
         && go tool cover -func="$PKG_PROFILE" | awk '/^total:/ {gsub(/%/,"",$3); print $3}')"
       rm -f "$PKG_PROFILE"
       if [[ -z "$PKG_COV" ]]; then
