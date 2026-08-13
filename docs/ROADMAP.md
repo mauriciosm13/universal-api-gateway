@@ -103,6 +103,7 @@ Every feature must satisfy at least one of:
 - [ ] Request middleware
 - [ ] Response middleware
 - [ ] Error middleware
+- [ ] JSON error responses (structured 4xx/5xx body with `Content-Type: application/json`)
 
 ### Configuration
 
