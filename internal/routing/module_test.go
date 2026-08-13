@@ -5,6 +5,8 @@ import (
 
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
 	chainrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/chain"
+	hostrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/host"
+	methodrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/method"
 	staticrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/static"
 	routingstub "github.com/mauriciomendonca/universal-api-gateway/internal/routing/stub"
 )
@@ -73,5 +75,68 @@ func TestBuildRouterPathAndDefaultUsesChain(t *testing.T) {
 
 	if _, ok := router.(*chainrouter.Router); !ok {
 		t.Fatalf("router type = %T, want *chain.Router", router)
+	}
+}
+
+func TestBuildRouterHostAndMethodChain(t *testing.T) {
+	t.Parallel()
+
+	router, err := buildRouter(config.Config{
+		HostRoutes: []config.HostRoute{
+			{Host: "api.example.com", Upstream: "http://host:8080"},
+		},
+		MethodRoutes: []config.MethodRoute{
+			{Method: "POST", Upstream: "http://post:8080"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("buildRouter() error = %v", err)
+	}
+
+	if _, ok := router.(*chainrouter.Router); !ok {
+		t.Fatalf("router type = %T, want *chain.Router", router)
+	}
+}
+
+func TestBuildRouterInvalidDefaultUpstream(t *testing.T) {
+	t.Parallel()
+
+	_, err := buildRouter(config.Config{DefaultUpstream: "not-a-url"})
+	if err == nil {
+		t.Fatal("buildRouter() error = nil, want invalid default upstream")
+	}
+}
+
+func TestBuildRouterSingleHostOnly(t *testing.T) {
+	t.Parallel()
+
+	router, err := buildRouter(config.Config{
+		HostRoutes: []config.HostRoute{
+			{Host: "api.example.com", Upstream: "http://host:8080"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("buildRouter() error = %v", err)
+	}
+
+	if _, ok := router.(*hostrouter.Router); !ok {
+		t.Fatalf("router type = %T, want *host.Router", router)
+	}
+}
+
+func TestBuildRouterSingleMethodOnly(t *testing.T) {
+	t.Parallel()
+
+	router, err := buildRouter(config.Config{
+		MethodRoutes: []config.MethodRoute{
+			{Method: "POST", Upstream: "http://post:8080"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("buildRouter() error = %v", err)
+	}
+
+	if _, ok := router.(*methodrouter.Router); !ok {
+		t.Fatalf("router type = %T, want *method.Router", router)
 	}
 }

@@ -14,14 +14,11 @@ import (
 func TestRoutesDispatchesHealth(t *testing.T) {
 	t.Parallel()
 
-	deps := Dependencies{
-		Config: config.Config{
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: routingstub.NewNoOpRouter(),
-	}
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, routingstub.NewNoOpRouter())
 
 	handler := newRoutes(deps)
 
@@ -40,14 +37,11 @@ func TestRoutesDispatchesHealth(t *testing.T) {
 func TestRoutesNonHealthUsesGateway(t *testing.T) {
 	t.Parallel()
 
-	deps := Dependencies{
-		Config: config.Config{
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: routingstub.NewNoOpRouter(),
-	}
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, routingstub.NewNoOpRouter())
 
 	handler := newRoutes(deps)
 
@@ -77,14 +71,11 @@ func TestRoutesNonHealthUsesGateway(t *testing.T) {
 func TestRoutesNonGetHealthUsesGateway(t *testing.T) {
 	t.Parallel()
 
-	deps := Dependencies{
-		Config: config.Config{
-			ReadTimeout:  time.Second,
-			WriteTimeout: time.Second,
-			IdleTimeout:  time.Second,
-		},
-		Router: routingstub.NewNoOpRouter(),
-	}
+	deps := newTestDependencies(config.Config{
+		ReadTimeout:  time.Second,
+		WriteTimeout: time.Second,
+		IdleTimeout:  time.Second,
+	}, routingstub.NewNoOpRouter())
 
 	handler := newRoutes(deps)
 

@@ -172,6 +172,34 @@ func TestLoadDefaultUpstreamInvalid(t *testing.T) {
 	}
 }
 
+func TestLoadHostRoutesValid(t *testing.T) {
+	t.Setenv("GATEWAY_HOST_ROUTES", "api.example.com=http://api:8080")
+	t.Setenv("OTEL_TRACES_EXPORTER", "none")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+
+	if len(cfg.HostRoutes) != 1 {
+		t.Fatalf("unexpected host routes: %+v", cfg.HostRoutes)
+	}
+}
+
+func TestLoadMethodRoutesValid(t *testing.T) {
+	t.Setenv("GATEWAY_METHOD_ROUTES", "GET=http://get:8080")
+	t.Setenv("OTEL_TRACES_EXPORTER", "none")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+
+	if len(cfg.MethodRoutes) != 1 || cfg.MethodRoutes[0].Method != "GET" {
+		t.Fatalf("unexpected method routes: %+v", cfg.MethodRoutes)
+	}
+}
+
 func TestLoadHeaderRoutesValid(t *testing.T) {
 	t.Setenv("GATEWAY_HEADER_ROUTES", "X-Version=v1=http://v1:8080")
 	t.Setenv("OTEL_TRACES_EXPORTER", "none")

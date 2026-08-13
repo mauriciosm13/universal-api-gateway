@@ -22,6 +22,16 @@ func newGatewayHandler(deps Dependencies) *gatewayHandler {
 func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req := toDomainRequest(r)
 
+	resp, err := h.deps.Pipeline.Execute(r.Context(), req)
+	if err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "pipeline error")
+		return
+	}
+	if !shouldContinue(resp) {
+		writeDomainResponse(w, resp)
+		return
+	}
+
 	route, err := h.deps.Router.Resolve(r.Context(), req)
 	if errors.Is(err, routingport.ErrNoRoute) {
 		writeJSONError(w, http.StatusNotFound, "no route matched")
