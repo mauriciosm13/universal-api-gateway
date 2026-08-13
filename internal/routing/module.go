@@ -5,8 +5,6 @@ import (
 
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/di"
-	chainrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/chain"
-	headerrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/header"
 	pathrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/path"
 	staticrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/static"
 	routingport "github.com/mauriciomendonca/universal-api-gateway/internal/routing/port"
@@ -18,7 +16,24 @@ type Module struct{}
 
 // Register implements di.Module.
 func (Module) Register(b *di.Builder) {
-	router, err := buildRouter(b.Config())
+	cfg := b.Config()
+
+	if len(cfg.PathRoutes) > 0 {
+		router, err := pathrouter.NewRouter(cfg.PathRoutes, cfg.DefaultUpstream)
+		if err != nil {
+			panic(fmt.Sprintf("routing: path router: %v", err))
+		}
+
+		b.ProvideRouter(router)
+		return
+	}
+
+	if cfg.DefaultUpstream == "" {
+		b.ProvideRouter(routingstub.NewNoOpRouter())
+		return
+	}
+
+	router, err := staticrouter.NewRouter(cfg.DefaultUpstream)
 	if err != nil {
 		panic(fmt.Sprintf("routing: %v", err))
 	}

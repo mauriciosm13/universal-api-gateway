@@ -29,7 +29,6 @@ type Config struct {
 	IdleTimeout     time.Duration
 	DefaultUpstream string
 	PathRoutes      []PathRoute
-	HeaderRoutes    []HeaderRoute
 	Telemetry       TelemetryConfig
 }
 
@@ -65,11 +64,6 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("invalid GATEWAY_PATH_ROUTES: %w", err)
 	}
 
-	headerRoutes, err := ParseHeaderRoutes(os.Getenv("GATEWAY_HEADER_ROUTES"))
-	if err != nil {
-		return Config{}, fmt.Errorf("invalid GATEWAY_HEADER_ROUTES: %w", err)
-	}
-
 	return Config{
 		Host:            envString("GATEWAY_HOST", defaultHost),
 		Port:            port,
@@ -78,7 +72,6 @@ func Load() (Config, error) {
 		IdleTimeout:     envDuration("GATEWAY_IDLE_TIMEOUT", defaultIdleTimeout),
 		DefaultUpstream: defaultUpstream,
 		PathRoutes:      pathRoutes,
-		HeaderRoutes:    headerRoutes,
 		Telemetry:       telemetry,
 	}, nil
 }

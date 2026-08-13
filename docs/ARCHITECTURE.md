@@ -95,7 +95,8 @@ Config enters the graph via the `Builder` constructor (environment bootstrap), n
 
 Module registration order matters for overrides: later `Provide*` calls replace earlier values. Tests append a `di.FuncModule` to swap stubs without changing `main.go`.
 
-Health routes (`/health`, `/health/live`, `/health/ready`) register in `internal/server/routes.go` via `http.ServeMux`. Non-health traffic is proxied via `gatewayHandler` when routing is configured; otherwise requests return JSON 404. Router chain precedence: header routes (`GATEWAY_HEADER_ROUTES`) → path routes (`GATEWAY_PATH_ROUTES`) → default upstream (`GATEWAY_DEFAULT_UPSTREAM`).
+
+Health routes (`/health`, `/health/live`, `/health/ready`) register in `internal/server/routes.go` via `http.ServeMux`. Non-health traffic is proxied via `gatewayHandler` when routing is configured; otherwise requests return 404. Path prefixes route via `GATEWAY_PATH_ROUTES`; unmatched paths fall back to `GATEWAY_DEFAULT_UPSTREAM` when set.
 
 ## Target Modules
 
@@ -129,5 +130,7 @@ Health routes (`/health`, `/health/live`, `/health/ready`) register in `internal
 - [Spec — Path Routing](specs/path-routing.md)
 - [Spec — Header Routing](specs/header-routing.md)
 - [Spec — JSON Error Responses](specs/json-error-responses.md)
+- [Spec — Reverse Proxy](specs/reverse-proxy.md)
+- [Spec — Path Routing](specs/path-routing.md)
 - [ADR 0001 — OpenTelemetry Go SDK](adrs/0001-opentelemetry-go-sdk.md)
 - [Spec — OpenTelemetry Setup](specs/opentelemetry-setup.md)
