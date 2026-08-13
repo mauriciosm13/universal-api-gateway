@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
+	chainrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/chain"
+	headerrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/header"
 	pathrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/path"
 	staticrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/static"
 	routingstub "github.com/mauriciomendonca/universal-api-gateway/internal/routing/stub"
@@ -206,6 +208,76 @@ func TestGatewayPathRouting(t *testing.T) {
 
 	if string(body) != "other:/other" {
 		t.Fatalf("body = %q, want other:/other", string(body))
+	}
+}
+
+func TestGatewayHeaderRouting(t *testing.T) {
+	t.Parallel()
+
+	v1Upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = io.WriteString(w, "v1")
+	}))
+	t.Cleanup(v1Upstream.Close)
+
+	pathUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = io.WriteString(w, "path")
+	}))
+	t.Cleanup(pathUpstream.Close)
+
+	headerRouter, err := headerrouter.NewRouter([]config.HeaderRoute{
+		{Name: "X-Version", Value: "v1", Upstream: v1Upstream.URL},
+	})
+	if err != nil {
+		t.Fatalf("header NewRouter() error = %v", err)
+	}
+
+	pathRouter, err := pathrouter.NewRouter([]config.PathRoute{
+		{Prefix: "/api", Upstream: pathUpstream.URL},
+	}, "")
+	if err != nil {
+		t.Fatalf("path NewRouter() error = %v", err)
+	}
+
+	router := chainrouter.NewRouter(headerRouter, pathRouter)
+
+	deps := Dependencies{
+		Config: config.Config{
+			ReadTimeout:  time.Second,
+			WriteTimeout: time.Second,
+			IdleTimeout:  time.Second,
+		},
+		Router: router,
+	}
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	req, err := http.NewRequest(http.MethodGet, srv.URL+"/api/users", nil)
+	if err != nil {
+		t.Fatalf("NewRequest() error = %v", err)
+	}
+	req.Header.Set("X-Version", "v1")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("Do() error = %v", err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if string(body) != "v1" {
+		t.Fatalf("header match body = %q, want v1", string(body))
+	}
+
+	resp, err = http.Get(srv.URL + "/api/users")
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	body, _ = io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if string(body) != "path" {
+		t.Fatalf("path match body = %q, want path", string(body))
 	}
 }
 

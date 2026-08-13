@@ -10,6 +10,8 @@ This project is under active development. The current release focuses on project
 
 - HTTP server with graceful shutdown
 - Health endpoints: `/health`, `/health/live`, `/health/ready`
+- HTTP reverse proxy with default, path, and header routing
+- JSON error responses for gateway-generated 4xx/5xx errors
 - Environment-based configuration
 - Docker and Docker Compose
 - Kubernetes manifests (Kustomize base + dev/staging/prod overlays)
@@ -54,6 +56,9 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_READ_TIMEOUT` | `15s` | Read timeout |
 | `GATEWAY_WRITE_TIMEOUT` | `15s` | Write timeout |
 | `GATEWAY_IDLE_TIMEOUT` | `60s` | Idle timeout |
+| `GATEWAY_DEFAULT_UPSTREAM` | — | Default upstream URL for reverse proxy |
+| `GATEWAY_PATH_ROUTES` | — | Comma-separated path routes: `/api=http://backend:8080` |
+| `GATEWAY_HEADER_ROUTES` | — | Comma-separated header routes: `X-Version=v1=http://v1:8080` |
 | `OTEL_SDK_DISABLED` | `true` | Disable OpenTelemetry tracing |
 | `OTEL_TRACES_EXPORTER` | `stdout` | Trace exporter when OTel enabled |
 

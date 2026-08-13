@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Gateway-generated 4xx/5xx error bodies are JSON (`Content-Type: application/json`) instead of plain text
+
 ### Added
 
 - Header-based routing via `GATEWAY_HEADER_ROUTES` with router chain precedence (RFC 0009)
