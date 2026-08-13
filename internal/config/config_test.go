@@ -172,6 +172,30 @@ func TestLoadDefaultUpstreamInvalid(t *testing.T) {
 	}
 }
 
+func TestLoadPathRoutesValid(t *testing.T) {
+	t.Setenv("GATEWAY_PATH_ROUTES", "/api=http://api:8080")
+	t.Setenv("OTEL_TRACES_EXPORTER", "none")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+
+	if len(cfg.PathRoutes) != 1 || cfg.PathRoutes[0].Prefix != "/api" {
+		t.Fatalf("unexpected path routes: %+v", cfg.PathRoutes)
+	}
+}
+
+func TestLoadPathRoutesInvalid(t *testing.T) {
+	t.Setenv("GATEWAY_PATH_ROUTES", "api=http://api:8080")
+	t.Setenv("OTEL_TRACES_EXPORTER", "none")
+
+	_, err := Load()
+	if err == nil {
+		t.Fatal("expected error for invalid GATEWAY_PATH_ROUTES")
+	}
+}
+
 func TestValidateUpstreamURL(t *testing.T) {
 	t.Parallel()
 

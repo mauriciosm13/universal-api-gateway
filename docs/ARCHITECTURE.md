@@ -28,6 +28,7 @@ internal/
     port/                       Router interface
     stub/                       NoOpRouter
     adapter/static/             StaticRouter (default upstream)
+    adapter/path/               PathRouter (prefix routing)
     module.go                   DI provider for routing
   ratelimit/
     port/                       Limiter interface
@@ -92,14 +93,14 @@ Config enters the graph via the `Builder` constructor (environment bootstrap), n
 
 Module registration order matters for overrides: later `Provide*` calls replace earlier values. Tests append a `di.FuncModule` to swap stubs without changing `main.go`.
 
-Health routes (`/health`, `/health/live`, `/health/ready`) dispatch in `internal/server/handler.go` via `rootHandler`. Non-health traffic is proxied via `gatewayHandler` when `GATEWAY_DEFAULT_UPSTREAM` is set; otherwise requests return 404. Route registration will move to a dedicated file (see roadmap).
+Health routes (`/health`, `/health/live`, `/health/ready`) register in `internal/server/routes.go` via `http.ServeMux`. Non-health traffic is proxied via `gatewayHandler` when routing is configured; otherwise requests return 404. Path prefixes route via `GATEWAY_PATH_ROUTES`; unmatched paths fall back to `GATEWAY_DEFAULT_UPSTREAM` when set.
 
 ## Target Modules
 
 | Module | Responsibility | M0 status |
 |---|---|---|
 | `auth` | JWT, OAuth2, API keys, mTLS | Port + NoOp stub + DI module |
-| `routing` | Reverse proxy, path/host routing | Port + StaticRouter adapter + DI module |
+| `routing` | Reverse proxy, path/host routing | Port + StaticRouter + PathRouter adapters + DI module |
 | `ratelimit` | Token bucket, sliding window | Port + NoOp stub + DI module |
 | `middleware` | Request/response pipeline | Port + passthrough stub + DI module |
 | `observability` | Logs, metrics, traces | Port + NoOp stub + DI module |
@@ -120,6 +121,8 @@ Health routes (`/health`, `/health/live`, `/health/ready`) dispatch in `internal
 - [RFC 0003 — Kubernetes Base Manifests](rfcs/0003-kubernetes-base-manifests.md)
 - [RFC 0005 — OpenTelemetry Setup](rfcs/0005-opentelemetry-setup.md)
 - [RFC 0007 — Reverse Proxy](rfcs/0007-reverse-proxy.md)
+- [RFC 0008 — Path Routing](rfcs/0008-path-routing.md)
 - [Spec — Reverse Proxy](specs/reverse-proxy.md)
+- [Spec — Path Routing](specs/path-routing.md)
 - [ADR 0001 — OpenTelemetry Go SDK](adrs/0001-opentelemetry-go-sdk.md)
 - [Spec — OpenTelemetry Setup](specs/opentelemetry-setup.md)

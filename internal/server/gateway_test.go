@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
+	pathrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/path"
 	staticrouter "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/static"
 	routingstub "github.com/mauriciomendonca/universal-api-gateway/internal/routing/stub"
 )
@@ -136,6 +137,61 @@ func TestHealthEndpointsBypassProxy(t *testing.T) {
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("Get(%q) status = %d, want 200", path, resp.StatusCode)
 		}
+	}
+}
+
+func TestGatewayPathRouting(t *testing.T) {
+	t.Parallel()
+
+	apiUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = io.WriteString(w, "api:"+r.URL.Path)
+	}))
+	t.Cleanup(apiUpstream.Close)
+
+	otherUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = io.WriteString(w, "other:"+r.URL.Path)
+	}))
+	t.Cleanup(otherUpstream.Close)
+
+	router, err := pathrouter.NewRouter([]config.PathRoute{
+		{Prefix: "/api", Upstream: apiUpstream.URL},
+	}, otherUpstream.URL)
+	if err != nil {
+		t.Fatalf("NewRouter() error = %v", err)
+	}
+
+	deps := Dependencies{
+		Config: config.Config{
+			ReadTimeout:  time.Second,
+			WriteTimeout: time.Second,
+			IdleTimeout:  time.Second,
+		},
+		Router: router,
+	}
+
+	srv := httptest.NewServer(New(deps).httpServer.Handler)
+	t.Cleanup(srv.Close)
+
+	resp, err := http.Get(srv.URL + "/api/users")
+	if err != nil {
+		t.Fatalf("Get(/api/users) error = %v", err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if string(body) != "api:/api/users" {
+		t.Fatalf("body = %q, want api:/api/users", string(body))
+	}
+
+	resp, err = http.Get(srv.URL + "/other")
+	if err != nil {
+		t.Fatalf("Get(/other) error = %v", err)
+	}
+	body, _ = io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if string(body) != "other:/other" {
+		t.Fatalf("body = %q, want other:/other", string(body))
 	}
 }
 

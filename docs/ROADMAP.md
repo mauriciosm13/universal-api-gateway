@@ -88,8 +88,8 @@ Every feature must satisfy at least one of:
 ### Routing
 
 - [x] Reverse proxy
-- [ ] Centralized HTTP route registration (`internal/server/routes.go`)
-- [ ] Path routing
+- [x] Centralized HTTP route registration (`internal/server/routes.go`)
+- [x] Path routing
 - [ ] Header routing
 - [ ] Host routing
 - [ ] Method routing
@@ -103,6 +103,7 @@ Every feature must satisfy at least one of:
 - [ ] Request middleware
 - [ ] Response middleware
 - [ ] Error middleware
+- [ ] JSON error responses (structured 4xx/5xx body with `Content-Type: application/json`)
 
 ### Configuration
 

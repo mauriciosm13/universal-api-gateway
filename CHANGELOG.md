@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Prefix-based path routing via `GATEWAY_PATH_ROUTES` with optional default upstream fallback (RFC 0008)
+- Centralized HTTP route registration in `internal/server/routes.go`
+- Path routing adapter (`internal/routing/adapter/path`)
+- RFC 0008 and specification for M1 path routing
 - HTTP reverse proxy with default upstream via `GATEWAY_DEFAULT_UPSTREAM` (RFC 0007)
 - Static routing adapter (`internal/routing/adapter/static`) for single-upstream proxying
 - RFC 0007 and specification for M1 reverse proxy
