@@ -10,8 +10,10 @@ This project is under active development. The current release focuses on project
 
 - HTTP server with graceful shutdown
 - Health endpoints: `/health`, `/health/live`, `/health/ready`
+- JWT validation endpoint: `GET /auth/validate` (runs auth pipeline; returns identity JSON)
 - HTTP reverse proxy with default, path, and header routing
 - JSON error responses for gateway-generated 4xx/5xx errors
+- JWT authentication (HS256 HMAC or RS256/ES256 JWKS) when configured via env
 - Environment-based configuration
 - Docker and Docker Compose
 - Kubernetes manifests (Kustomize base + dev/staging/prod overlays)
@@ -61,6 +63,10 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_HEADER_ROUTES` | — | Comma-separated header routes: `X-Version=v1=http://v1:8080` |
 | `GATEWAY_HOST_ROUTES` | — | Comma-separated host routes: `api.example.com=http://api:8080` |
 | `GATEWAY_METHOD_ROUTES` | — | Comma-separated method routes: `GET=http://get:8080` |
+| `GATEWAY_JWT_JWKS_URL` | — | JWKS URL for RS256/ES256 JWT validation (mutually exclusive with HMAC) |
+| `GATEWAY_JWT_HMAC_SECRET` | — | HMAC secret for HS256 JWT validation (min 32 chars; mutually exclusive with JWKS) |
+| `GATEWAY_JWT_ISSUER` | — | Optional expected JWT `iss` claim |
+| `GATEWAY_JWT_AUDIENCE` | — | Optional expected JWT `aud` claim |
 | `OTEL_SDK_DISABLED` | `true` | Disable OpenTelemetry tracing |
 | `OTEL_TRACES_EXPORTER` | `stdout` | Trace exporter when OTel enabled |
 

@@ -48,6 +48,44 @@ func TestAuthMiddlewareRejectsInvalidToken(t *testing.T) {
 	}
 }
 
+func TestAuthMiddlewareRejectsMissingToken(t *testing.T) {
+	t.Parallel()
+
+	pipeline := NewPipeline(
+		ContinueHandler,
+		NewAuthMiddleware(rejectAuthenticator{}),
+	)
+
+	resp, err := pipeline.Execute(context.Background(), domain.Request{})
+	if err != nil {
+		t.Fatalf("Execute() error = %v", err)
+	}
+
+	if resp.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("status = %d, want 401", resp.StatusCode)
+	}
+}
+
+func TestAuthMiddlewareRejectsMalformedAuthorizationHeader(t *testing.T) {
+	t.Parallel()
+
+	pipeline := NewPipeline(
+		ContinueHandler,
+		NewAuthMiddleware(rejectAuthenticator{}),
+	)
+
+	resp, err := pipeline.Execute(context.Background(), domain.Request{
+		Headers: map[string][]string{"Authorization": {"Basic dGVzdA=="}},
+	})
+	if err != nil {
+		t.Fatalf("Execute() error = %v", err)
+	}
+
+	if resp.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("status = %d, want 401", resp.StatusCode)
+	}
+}
+
 type stubAuthenticator struct{}
 
 func (stubAuthenticator) Authenticate(context.Context, string) (authport.Identity, error) {
@@ -56,6 +94,10 @@ func (stubAuthenticator) Authenticate(context.Context, string) (authport.Identit
 
 type rejectAuthenticator struct{}
 
-func (rejectAuthenticator) Authenticate(context.Context, string) (authport.Identity, error) {
+func (rejectAuthenticator) Authenticate(_ context.Context, token string) (authport.Identity, error) {
+	if token == "" {
+		return authport.Identity{}, errors.New("missing token")
+	}
+
 	return authport.Identity{}, errors.New("invalid token")
 }
