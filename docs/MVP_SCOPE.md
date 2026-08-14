@@ -24,7 +24,7 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 |---|---|
 | M0 — Foundation | Complete |
 | M1 — Core Gateway | ~65% — in progress |
-| M2 — Auth & Authorization | Not started (MVP subset only) |
+| M2 — Auth & Authorization | In progress (JWT done) |
 | M3 — Traffic Management | Not started (MVP subset only) |
 
 ---
@@ -50,7 +50,7 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 
 | Deliverable | Status | Notes |
 |---|---|---|
-| JWT validation | Planned | Week 3 |
+| JWT validation | Done | Week 3 — HS256 + JWKS (RS256/ES256) |
 | API keys | Planned | Week 4 |
 | User context propagation | Planned | Week 4 |
 | OAuth2 / OIDC | Post-MVP | |
@@ -154,10 +154,10 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 3 — JWT authentication
 
-- [ ] JWT validator adapter (`Authorization: Bearer`)
-- [ ] Config: JWKS URL or HMAC secret via env
-- [ ] Reject invalid/expired tokens with JSON 401
-- [ ] Tests + spec
+- [x] JWT validator adapter (`Authorization: Bearer`)
+- [x] Config: JWKS URL or HMAC secret via env
+- [x] Reject invalid/expired tokens with JSON 401
+- [x] Tests + spec
 
 **Exit criteria:** Valid JWT passes; invalid JWT returns 401 JSON.
 

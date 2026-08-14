@@ -1,6 +1,6 @@
 {
   "status": "PHASE1",
-  "coverage": 94.7,
+  "coverage": 88.3,
   "coverage_minimum": 85,
   "changed_code_minimum": 90,
   "mutation_score": null,

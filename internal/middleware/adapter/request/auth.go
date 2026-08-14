@@ -23,7 +23,7 @@ func NewAuthMiddleware(authenticator authport.Authenticator) *AuthMiddleware {
 // Wrap implements port.Middleware.
 func (m *AuthMiddleware) Wrap(next port.Handler) port.Handler {
 	return func(ctx context.Context, req domain.Request) (domain.Response, error) {
-		token := bearerToken(req)
+		token := BearerToken(req)
 		if _, err := m.authenticator.Authenticate(ctx, token); err != nil {
 			return jsonResponse(http.StatusUnauthorized, "unauthorized"), nil
 		}
@@ -32,16 +32,19 @@ func (m *AuthMiddleware) Wrap(next port.Handler) port.Handler {
 	}
 }
 
-func bearerToken(req domain.Request) string {
+// BearerToken extracts the token from Authorization: Bearer <token>.
+// Malformed or missing Bearer prefix returns an empty string.
+func BearerToken(req domain.Request) string {
 	values := req.Headers["Authorization"]
 	if len(values) == 0 {
 		return ""
 	}
 
-	value := values[0]
-	if !strings.HasPrefix(value, "Bearer ") {
-		return value
+	value := strings.TrimSpace(values[0])
+	const prefix = "Bearer "
+	if !strings.HasPrefix(value, prefix) {
+		return ""
 	}
 
-	return strings.TrimSpace(strings.TrimPrefix(value, "Bearer "))
+	return strings.TrimSpace(strings.TrimPrefix(value, prefix))
 }

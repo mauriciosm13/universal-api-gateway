@@ -33,6 +33,7 @@ type Config struct {
 	HostRoutes      []HostRoute
 	MethodRoutes    []MethodRoute
 	Telemetry       TelemetryConfig
+	JWT             JWTConfig
 }
 
 // TelemetryConfig holds OpenTelemetry settings from OTEL_* environment variables.
@@ -82,6 +83,11 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("invalid GATEWAY_METHOD_ROUTES: %w", err)
 	}
 
+	jwtCfg, err := loadJWT()
+	if err != nil {
+		return Config{}, err
+	}
+
 	return Config{
 		Host:            envString("GATEWAY_HOST", defaultHost),
 		Port:            port,
@@ -94,6 +100,7 @@ func Load() (Config, error) {
 		HostRoutes:      hostRoutes,
 		MethodRoutes:    methodRoutes,
 		Telemetry:       telemetry,
+		JWT:             jwtCfg,
 	}, nil
 }
 

@@ -12,7 +12,7 @@
 |---|---|
 | M0 — Foundation | 🟢 Complete |
 | M1 — Core Gateway | 🟡 In progress |
-| M2 — Auth & Authorization | ⚪ Not started |
+| M2 — Auth & Authorization | 🟡 In progress |
 | M3 — Traffic Management | ⚪ Not started |
 | M4 — Observability | ⚪ Not started |
 | M5 — Plugin Platform | ⚪ Not started |
@@ -128,7 +128,7 @@ Every feature must satisfy at least one of:
 
 ### Authentication
 
-- [ ] JWT
+- [x] JWT
 - [ ] OAuth2
 - [ ] OpenID Connect
 - [ ] API keys

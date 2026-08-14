@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- JWT authentication via `GATEWAY_JWT_JWKS_URL` (RS256/ES256) or `GATEWAY_JWT_HMAC_SECRET` (HS256)
+- Optional JWT issuer and audience validation (`GATEWAY_JWT_ISSUER`, `GATEWAY_JWT_AUDIENCE`)
+- RFC MVP-2, ADR 0002, and JWT authentication specification
 - Host routing via `GATEWAY_HOST_ROUTES` and method routing via `GATEWAY_METHOD_ROUTES`
 - Request middleware pipeline with auth and rate-limit hooks (no-op passthrough until M2/M3)
 - RFC MVP-1 and middleware pipeline specification
