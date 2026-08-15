@@ -35,6 +35,7 @@ type Config struct {
 	Telemetry       TelemetryConfig
 	JWT             JWTConfig
 	APIKeys         APIKeyConfig
+	RateLimit       RateLimitConfig
 }
 
 // TelemetryConfig holds OpenTelemetry settings from OTEL_* environment variables.
@@ -94,6 +95,11 @@ func Load() (Config, error) {
 		return Config{}, err
 	}
 
+	rateLimitCfg, err := loadRateLimit()
+	if err != nil {
+		return Config{}, err
+	}
+
 	return Config{
 		Host:            envString("GATEWAY_HOST", defaultHost),
 		Port:            port,
@@ -108,6 +114,7 @@ func Load() (Config, error) {
 		Telemetry:       telemetry,
 		JWT:             jwtCfg,
 		APIKeys:         apiKeyCfg,
+		RateLimit:       rateLimitCfg,
 	}, nil
 }
 

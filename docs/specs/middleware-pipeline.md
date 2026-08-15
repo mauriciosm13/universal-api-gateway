@@ -11,6 +11,17 @@ Execute ordered middleware on proxied traffic before routing. Short-circuit with
 3. Rate limit middleware (`Limiter` port)
 4. Terminal continue handler
 
+## Rate limit key
+
+After auth, rate limit middleware selects the bucket key:
+
+| Condition | Key |
+|---|---|
+| Identity subject present and not `anonymous` | `Identity.Subject` |
+| Otherwise | `Host + Path` |
+
+Route-specific limits match request path (longest prefix). See [rate-limiting.md](rate-limiting.md).
+
 ## Continue semantics
 
 `StatusCode: 0` means continue to routing and proxy.

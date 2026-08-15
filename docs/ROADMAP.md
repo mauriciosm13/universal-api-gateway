@@ -155,7 +155,8 @@ Every feature must satisfy at least one of:
 
 **Goal:** Control traffic intelligently.
 
-- [ ] Rate limiting (fixed window, sliding window, token bucket, leaky bucket)
+- [x] Rate limiting — token bucket (MVP Week 5)
+- [ ] Rate limiting — fixed window, sliding window, leaky bucket
 - [ ] Load balancing (round robin, least connections, weighted, sticky)
 - [ ] Reliability (retry, timeout, circuit breaker, fallback, bulkhead)
 - [ ] Caching (memory, Redis, response cache)
