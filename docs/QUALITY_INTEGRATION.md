@@ -9,9 +9,10 @@
 5. Quality-gate rules in [AGENTS.md](../AGENTS.md)
 6. Quality checklist merged into [REVIEW_CHECKLIST.md](REVIEW_CHECKLIST.md)
 7. Baseline in `quality/baselines/quality-baseline.json`
+8. Coverage hardening (RFC 0010): single test run, regression, untested-package, changed-statement gates
 
 ## Later phases
 
-Implement each remaining gate through RFC/ADR decisions. Turn soft gates into hard gates only after a reliable baseline exists.
+Implement each remaining gate through RFC/ADR decisions. Coverage gates are hard after RFC 0010.
 
 Every new CI dependency must have a documented purpose and, when architecturally significant, an ADR.

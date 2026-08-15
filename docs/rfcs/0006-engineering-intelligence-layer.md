@@ -14,7 +14,8 @@ The project follows Staff Engineer practices and AI-assisted development. Withou
 - Single entry point: `quality/scripts/quality-gate.sh`
 - CI and Makefile invoke the same gate (no duplicated logic)
 - Hard gates: format, `go vet`, unit tests (`-race`), global coverage ≥ 85%
-- Soft gate: changed-package coverage ≥ 90% on pull requests (warn until stable)
+- Hard gate: changed-code coverage ≥ 90% on pull requests (statement-level; RFC 0010)
+- Hard gate: coverage regression vs baseline; executable `internal/` packages must have tests
 - Human and machine-readable bootstrap quality report
 - Update PROJECT_BIBLE, AGENTS, TESTING, ROADMAP, CHANGELOG
 
@@ -55,14 +56,16 @@ Remaining steps emit bootstrap placeholders with explicit TODOs referencing this
 
 ### Coverage policy
 
-| Metric | Threshold | Phase 1 enforcement |
+| Metric | Threshold | Enforcement |
 |---|---|---|
-| Global (`internal/...`) | 85% | FAIL |
-| Changed packages (PR) | 90% | WARN |
+| Global (`internal/` statements) | 85% | FAIL |
+| Coverage vs baseline | `allowed_drop_percentage: 0` | FAIL |
+| Executable package without tests | n/a | FAIL |
+| Changed statements (PR) | 90% | FAIL |
 
 Configuration: `quality/config/coverage.yaml`. Baseline: `quality/baselines/quality-baseline.json`.
 
-Changed-package coverage avoids new CI dependencies. Line-level changed coverage may adopt a dedicated tool through a future ADR.
+Changed-code coverage uses `git diff -U0` overlapped with cover-profile blocks. No extra CI dependency. See [RFC 0010](0010-coverage-gate-hardening.md).
 
 ### CI integration
 
@@ -82,7 +85,7 @@ See `quality/AI_REMEDIATION.md`. Agents must never lower thresholds, delete test
 ## Risks
 
 - **Coverage gate fails existing code** — mitigated by adding targeted unit tests before enabling the 85% hard gate.
-- **Changed-code heuristic too coarse** — package-level WARN in Phase 1; refine with ADR-backed tooling later.
+- **Changed-code heuristic too coarse** — mitigated in RFC 0010 by statement-level overlap with `git diff -U0`; dedicated SaaS still optional via ADR.
 - **Placeholder gates look “green”** — bootstrap scripts print explicit TODO; report status is `phase1`, not `pass-all`.
 
 ## Migration
@@ -95,4 +98,4 @@ See `quality/AI_REMEDIATION.md`. Agents must never lower thresholds, delete test
 ## Open Questions
 
 - Mutation testing tool: evaluate `go-mutesting`, `gremlins`, and alternatives in Phase 3 ADR.
-- Line-level changed coverage tool: evaluate in a follow-up ADR if package-level checks prove insufficient.
+- Line-level changed coverage SaaS: not required after RFC 0010; evaluate only if the in-repo analyzer proves insufficient.

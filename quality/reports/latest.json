@@ -1,9 +1,10 @@
 {
   "status": "PHASE1",
-  "coverage": 90.1,
+  "coverage": 90,
   "coverage_minimum": 85,
   "changed_code_minimum": 90,
+  "coverage_gate": "PASS",
   "mutation_score": null,
   "security_issues": null,
-  "notes": "Bootstrap report — expand in Phase 6"
+  "notes": "Coverage details in coverage.json — expand remaining gates in Phase 6"
 }

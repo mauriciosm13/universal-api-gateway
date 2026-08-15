@@ -12,6 +12,7 @@
 ## Quality gate
 - [ ] `make quality` passes locally
 - [ ] Global coverage threshold respected
+- [ ] Changed-code coverage threshold respected on pull requests
 - [ ] Regression test added for bug fixes
 - [ ] No thresholds weakened to make CI pass
 

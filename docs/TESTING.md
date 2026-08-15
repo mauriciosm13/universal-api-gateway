@@ -22,13 +22,17 @@ Active gates:
 |---|---|
 | `gofmt` | hard fail |
 | `go vet` | hard fail |
-| unit tests (`-race`) | hard fail |
-| global coverage (`internal/...`) | hard fail at 85% |
-| changed-package coverage on PRs | soft warn at 90% |
+| unit tests (`-race`, `-covermode=atomic`) | hard fail |
+| global coverage (`internal/` statements) | hard fail at 85% |
+| coverage regression vs baseline | hard fail (`allowed_drop_percentage: 0`) |
+| executable `internal/` package without tests | hard fail |
+| changed-code coverage on PRs | hard fail at 90% of added coverable statements |
+
+`make quality` runs unit tests once (packages with tests, including `package x_test` files), writes `coverage.out`, then `quality/covercheck` analyzes that profile. No second test run. Go 1.25 cannot emit a coverprofile for packages with no tests (`covdata`).
 
 Configuration: `quality/config/coverage.yaml`. Baseline: `quality/baselines/quality-baseline.json`.
 
-Reports: `quality/reports/latest.md` and `quality/reports/latest.json`.
+Reports: `quality/reports/latest.md`, `quality/reports/latest.json`, and `quality/reports/coverage.json`.
 
 See [engineering-intelligence.md](engineering-intelligence.md) and [RFC 0006](rfcs/0006-engineering-intelligence-layer.md).
 

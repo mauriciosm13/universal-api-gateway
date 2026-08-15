@@ -4,7 +4,7 @@
   "coverage": {
     "global_minimum": 85,
     "changed_code_minimum": 90,
-    "measured_global": 96.2
+    "measured_global": 90.0
   },
-  "notes": "Baseline established with Phase 1 Engineering Intelligence layer (RFC 0006)."
+  "notes": "Baseline re-established with RFC 0010 honest internal/ statement coverage (single coverprofile, untested executable packages excluded from the denominator only when they have no statements)."
 }

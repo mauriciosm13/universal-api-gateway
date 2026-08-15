@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Coverage gate measures `internal/` statements from a single `go test` run, fails on baseline regression, untested executable packages, and changed-code coverage below 90% on PRs (RFC 0010)
+
+### Fixed
+
+- OpenTelemetry resource merge no longer conflicts schema URLs when telemetry is enabled
+
 ### Added
 
 - Round-robin load balancing across comma-separated upstream URLs per route (`GATEWAY_DEFAULT_UPSTREAM`, path/host/header/method routes)

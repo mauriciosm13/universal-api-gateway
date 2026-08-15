@@ -31,7 +31,7 @@ Implementation lives under `quality/` and CI — not inside the gateway runtime.
 
 | Phase | Focus |
 |---|---|
-| 1 | Format, vet, unit tests, global coverage, baseline, report bootstrap |
+| 1 | Format, vet, unit tests, global coverage, regression, changed-code, baseline, report bootstrap |
 | 2 | Integration, regression, E2E |
 | 3 | Mutation, complexity, module size |
 | 4 | Dependency security, SAST, secrets, containers, SBOM |

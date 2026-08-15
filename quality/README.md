@@ -8,7 +8,7 @@ Objective engineering gates for AI-assisted development.
 
 ## Scope
 
-- Test coverage (Phase 1: global hard, changed-package soft)
+- Test coverage (Phase 1: global hard, regression hard, untested-package hard, changed-code hard)
 - Mutation testing (Phase 3)
 - Regression testing (Phase 2)
 - Integration and E2E testing (Phase 2)
@@ -20,7 +20,7 @@ Objective engineering gates for AI-assisted development.
 - Machine-readable quality reports (Phase 6)
 - AI-assisted remediation protocol (Phase 6 automation)
 
-Hard gates block merge. Soft gates warn while the project establishes baselines.
+Hard gates block merge. Soft gates warn while the project establishes baselines. Coverage gates are hard after RFC 0010.
 
 ## Usage
 

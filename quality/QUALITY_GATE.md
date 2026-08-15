@@ -21,10 +21,13 @@ Every gate must eventually emit:
 - formatting drift
 - `go vet` findings
 - global coverage below 85%
+- coverage below baseline (`fail_on_regression`, `allowed_drop_percentage: 0`)
+- executable `internal/` package with no tests
+- changed-code coverage below 90% on pull requests (added coverable statements vs the base branch)
 
 ## Soft gates (Phase 1)
 
-- changed-package coverage below 90% on pull requests
+- none for coverage; remaining pipeline steps are TODO placeholders
 
 ## AI remediation
 

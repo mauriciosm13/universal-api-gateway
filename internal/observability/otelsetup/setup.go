@@ -23,8 +23,7 @@ func Install(ctx context.Context, cfg config.TelemetryConfig) (func(context.Cont
 
 	res, err := resource.Merge(
 		resource.Default(),
-		resource.NewWithAttributes(
-			semconv.SchemaURL,
+		resource.NewSchemaless(
 			semconv.ServiceName(cfg.ServiceName),
 		),
 	)
