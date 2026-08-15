@@ -27,6 +27,8 @@ Hard gates block merge. Soft gates warn while the project establishes baselines.
 ```bash
 make quality          # full gate locally
 bash quality/scripts/quality-gate.sh
+bash quality/scripts/e2e-bootstrap.sh   # optional: demo compose E2E
+go test -tags=integration ./quality/e2e/...   # when demo stack is up
 ```
 
 See [QUALITY_GATE.md](QUALITY_GATE.md), [AI_REMEDIATION.md](AI_REMEDIATION.md), and [docs/engineering-intelligence.md](../docs/engineering-intelligence.md).
