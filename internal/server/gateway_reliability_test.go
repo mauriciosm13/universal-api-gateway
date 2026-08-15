@@ -23,7 +23,7 @@ func TestGatewayUpstreamTimeoutReturns504(t *testing.T) {
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -64,7 +64,7 @@ func TestGatewayUpstreamRetrySucceeds(t *testing.T) {
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -115,7 +115,7 @@ func TestGatewayUpstreamRetrySkippedForPOST(t *testing.T) {
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -156,7 +156,7 @@ func TestGatewayUpstreamRetrySkippedForPOST(t *testing.T) {
 func TestGatewayUpstreamConnectionFailureReturns502(t *testing.T) {
 	t.Parallel()
 
-	router, err := staticrouter.NewRouter("http://127.0.0.1:1")
+	router, err := staticrouter.NewRouter([]string{"http://127.0.0.1:1"})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}

@@ -5,42 +5,37 @@ import (
 	"strings"
 )
 
-// HeaderRoute maps a header name/value pair to an upstream URL.
+// HeaderRoute maps a header name/value pair to one or more upstream URLs.
 type HeaderRoute struct {
-	Name     string
-	Value    string
-	Upstream string
+	Name      string
+	Value     string
+	Upstreams []string
 }
 
 // ParseHeaderRoutes parses comma-separated HeaderName=HeaderValue=upstream entries.
+// Each upstream side may list multiple comma-separated URLs.
 func ParseHeaderRoutes(raw string) ([]HeaderRoute, error) {
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
 		return nil, nil
 	}
 
-	entries := strings.Split(raw, ",")
+	entries := splitRouteEntries(raw, isHeaderRouteEntry)
 	routes := make([]HeaderRoute, 0, len(entries))
 
 	for _, entry := range entries {
-		entry = strings.TrimSpace(entry)
-		if entry == "" {
-			continue
-		}
-
 		name, rest, ok := strings.Cut(entry, "=")
 		if !ok {
 			return nil, fmt.Errorf("entry %q: expected HeaderName=HeaderValue=upstream", entry)
 		}
 
-		value, upstream, ok := strings.Cut(rest, "=")
+		value, upstreamRaw, ok := strings.Cut(rest, "=")
 		if !ok {
 			return nil, fmt.Errorf("entry %q: expected HeaderName=HeaderValue=upstream", entry)
 		}
 
 		name = strings.TrimSpace(name)
 		value = strings.TrimSpace(value)
-		upstream = strings.TrimSpace(upstream)
 
 		if name == "" {
 			return nil, fmt.Errorf("entry %q: header name is required", entry)
@@ -48,17 +43,16 @@ func ParseHeaderRoutes(raw string) ([]HeaderRoute, error) {
 		if value == "" {
 			return nil, fmt.Errorf("entry %q: header value is required", entry)
 		}
-		if upstream == "" {
-			return nil, fmt.Errorf("entry %q: upstream is required", entry)
-		}
-		if err := ValidateUpstreamURL(upstream); err != nil {
+
+		upstreams, err := ParseUpstreamList(upstreamRaw)
+		if err != nil {
 			return nil, fmt.Errorf("entry %q: %w", entry, err)
 		}
 
 		routes = append(routes, HeaderRoute{
-			Name:     name,
-			Value:    value,
-			Upstream: upstream,
+			Name:      name,
+			Value:     value,
+			Upstreams: upstreams,
 		})
 	}
 

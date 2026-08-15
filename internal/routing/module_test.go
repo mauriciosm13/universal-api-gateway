@@ -28,7 +28,7 @@ func TestBuildRouterStaticOnly(t *testing.T) {
 	t.Parallel()
 
 	router, err := buildRouter(config.Config{
-		DefaultUpstream: "http://default:8080",
+		DefaultUpstreams: []string{"http://default:8080"},
 	})
 	if err != nil {
 		t.Fatalf("buildRouter() error = %v", err)
@@ -44,12 +44,12 @@ func TestBuildRouterChain(t *testing.T) {
 
 	router, err := buildRouter(config.Config{
 		HeaderRoutes: []config.HeaderRoute{
-			{Name: "X-Version", Value: "v1", Upstream: "http://v1:8080"},
+			{Name: "X-Version", Value: "v1", Upstreams: []string{"http://v1:8080"}},
 		},
 		PathRoutes: []config.PathRoute{
-			{Prefix: "/api", Upstream: "http://api:8080"},
+			{Prefix: "/api", Upstreams: []string{"http://api:8080"}},
 		},
-		DefaultUpstream: "http://default:8080",
+		DefaultUpstreams: []string{"http://default:8080"},
 	})
 	if err != nil {
 		t.Fatalf("buildRouter() error = %v", err)
@@ -65,9 +65,9 @@ func TestBuildRouterPathAndDefaultUsesChain(t *testing.T) {
 
 	router, err := buildRouter(config.Config{
 		PathRoutes: []config.PathRoute{
-			{Prefix: "/api", Upstream: "http://api:8080"},
+			{Prefix: "/api", Upstreams: []string{"http://api:8080"}},
 		},
-		DefaultUpstream: "http://default:8080",
+		DefaultUpstreams: []string{"http://default:8080"},
 	})
 	if err != nil {
 		t.Fatalf("buildRouter() error = %v", err)
@@ -83,10 +83,10 @@ func TestBuildRouterHostAndMethodChain(t *testing.T) {
 
 	router, err := buildRouter(config.Config{
 		HostRoutes: []config.HostRoute{
-			{Host: "api.example.com", Upstream: "http://host:8080"},
+			{Host: "api.example.com", Upstreams: []string{"http://host:8080"}},
 		},
 		MethodRoutes: []config.MethodRoute{
-			{Method: "POST", Upstream: "http://post:8080"},
+			{Method: "POST", Upstreams: []string{"http://post:8080"}},
 		},
 	})
 	if err != nil {
@@ -101,7 +101,7 @@ func TestBuildRouterHostAndMethodChain(t *testing.T) {
 func TestBuildRouterInvalidDefaultUpstream(t *testing.T) {
 	t.Parallel()
 
-	_, err := buildRouter(config.Config{DefaultUpstream: "not-a-url"})
+	_, err := buildRouter(config.Config{DefaultUpstreams: []string{"not-a-url"}})
 	if err == nil {
 		t.Fatal("buildRouter() error = nil, want invalid default upstream")
 	}
@@ -112,7 +112,7 @@ func TestBuildRouterSingleHostOnly(t *testing.T) {
 
 	router, err := buildRouter(config.Config{
 		HostRoutes: []config.HostRoute{
-			{Host: "api.example.com", Upstream: "http://host:8080"},
+			{Host: "api.example.com", Upstreams: []string{"http://host:8080"}},
 		},
 	})
 	if err != nil {
@@ -129,7 +129,7 @@ func TestBuildRouterSingleMethodOnly(t *testing.T) {
 
 	router, err := buildRouter(config.Config{
 		MethodRoutes: []config.MethodRoute{
-			{Method: "POST", Upstream: "http://post:8080"},
+			{Method: "POST", Upstreams: []string{"http://post:8080"}},
 		},
 	})
 	if err != nil {

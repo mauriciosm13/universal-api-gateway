@@ -15,7 +15,7 @@ func TestRouterMatchesMethod(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.MethodRoute{
-		{Method: "POST", Upstream: "http://post:8080"},
+		{Method: "POST", Upstreams: []string{"http://post:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
@@ -26,8 +26,8 @@ func TestRouterMatchesMethod(t *testing.T) {
 		t.Fatalf("Resolve() error = %v", err)
 	}
 
-	if route.Upstream != "http://post:8080" {
-		t.Fatalf("upstream = %q", route.Upstream)
+	if route.Upstreams[0] != "http://post:8080" {
+		t.Fatalf("upstream = %q", route.Upstreams[0])
 	}
 }
 
@@ -35,7 +35,7 @@ func TestRouterNoMatch(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.MethodRoute{
-		{Method: "GET", Upstream: "http://get:8080"},
+		{Method: "GET", Upstreams: []string{"http://get:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)

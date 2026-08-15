@@ -24,7 +24,7 @@ func TestGatewayJWTValidTokenProxies(t *testing.T) {
 	t.Parallel()
 
 	upstream := httptestUpstream(t, "jwt-ok")
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -63,7 +63,7 @@ func TestGatewayJWTValidTokenProxies(t *testing.T) {
 func TestGatewayJWTInvalidTokenReturns401(t *testing.T) {
 	t.Parallel()
 
-	router, err := staticrouter.NewRouter(httptestUpstream(t, "unused").URL)
+	router, err := staticrouter.NewRouter([]string{httptestUpstream(t, "unused").URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -95,7 +95,7 @@ func TestGatewayJWTInvalidTokenReturns401(t *testing.T) {
 func TestGatewayJWTMissingTokenReturns401(t *testing.T) {
 	t.Parallel()
 
-	router, err := staticrouter.NewRouter(httptestUpstream(t, "unused").URL)
+	router, err := staticrouter.NewRouter([]string{httptestUpstream(t, "unused").URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}

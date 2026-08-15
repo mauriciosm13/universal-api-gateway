@@ -10,7 +10,7 @@ import (
 func TestNewRouterValidUpstream(t *testing.T) {
 	t.Parallel()
 
-	router, err := NewRouter("http://backend:8080")
+	router, err := NewRouter([]string{"http://backend:8080"})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -24,8 +24,8 @@ func TestNewRouterValidUpstream(t *testing.T) {
 		t.Fatalf("expected route ID default, got %q", route.ID)
 	}
 
-	if route.Upstream != "http://backend:8080" {
-		t.Fatalf("expected upstream http://backend:8080, got %q", route.Upstream)
+	if route.Upstreams[0] != "http://backend:8080" {
+		t.Fatalf("expected upstream http://backend:8080, got %q", route.Upstreams[0])
 	}
 }
 
@@ -46,7 +46,7 @@ func TestNewRouterInvalidUpstream(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := NewRouter(tt.upstream)
+			_, err := NewRouter([]string{tt.upstream})
 			if err == nil {
 				t.Fatal("expected error for invalid upstream")
 			}
@@ -57,7 +57,7 @@ func TestNewRouterInvalidUpstream(t *testing.T) {
 func TestResolveSameRouteForDifferentPaths(t *testing.T) {
 	t.Parallel()
 
-	router, err := NewRouter("https://upstream.example")
+	router, err := NewRouter([]string{"https://upstream.example"})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -68,8 +68,8 @@ func TestResolveSameRouteForDifferentPaths(t *testing.T) {
 			t.Fatalf("Resolve(%q) error = %v", path, err)
 		}
 
-		if route.Upstream != "https://upstream.example" {
-			t.Fatalf("Resolve(%q) upstream = %q", path, route.Upstream)
+		if route.Upstreams[0] != "https://upstream.example" {
+			t.Fatalf("Resolve(%q) upstream = %q", path, route.Upstreams[0])
 		}
 	}
 }

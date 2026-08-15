@@ -14,11 +14,11 @@ func TestParsePathRoutesValid(t *testing.T) {
 		t.Fatalf("len(routes) = %d, want 2", len(routes))
 	}
 
-	if routes[0].Prefix != "/api" || routes[0].Upstream != "http://api:8080" {
+	if routes[0].Prefix != "/api" || routes[0].Upstreams[0] != "http://api:8080" {
 		t.Fatalf("routes[0] = %+v, want /api -> http://api:8080", routes[0])
 	}
 
-	if routes[1].Prefix != "/v2" || routes[1].Upstream != "https://v2.example.com" {
+	if routes[1].Prefix != "/v2" || routes[1].Upstreams[0] != "https://v2.example.com" {
 		t.Fatalf("routes[1] = %+v, want /v2 -> https://v2.example.com", routes[1])
 	}
 }

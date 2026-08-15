@@ -10,10 +10,10 @@ import (
 // ErrNoRoute indicates that no route matched the request.
 var ErrNoRoute = errors.New("routing: no route matched")
 
-// Route describes an upstream target for a matched request.
+// Route describes upstream targets for a matched request.
 type Route struct {
-	ID       string
-	Upstream string
+	ID        string
+	Upstreams []string
 }
 
 // Router resolves a domain request to a route.

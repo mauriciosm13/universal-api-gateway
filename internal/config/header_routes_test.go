@@ -14,7 +14,7 @@ func TestParseHeaderRoutesValid(t *testing.T) {
 		t.Fatalf("len(routes) = %d, want 2", len(routes))
 	}
 
-	if routes[0].Name != "X-Version" || routes[0].Value != "v1" || routes[0].Upstream != "http://v1:8080" {
+	if routes[0].Name != "X-Version" || routes[0].Value != "v1" || routes[0].Upstreams[0] != "http://v1:8080" {
 		t.Fatalf("routes[0] = %+v", routes[0])
 	}
 

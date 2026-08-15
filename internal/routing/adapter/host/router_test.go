@@ -14,7 +14,7 @@ func TestRouterMatchesHost(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.HostRoute{
-		{Host: "api.example.com", Upstream: "http://api:8080"},
+		{Host: "api.example.com", Upstreams: []string{"http://api:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
@@ -25,8 +25,8 @@ func TestRouterMatchesHost(t *testing.T) {
 		t.Fatalf("Resolve() error = %v", err)
 	}
 
-	if route.Upstream != "http://api:8080" {
-		t.Fatalf("upstream = %q", route.Upstream)
+	if route.Upstreams[0] != "http://api:8080" {
+		t.Fatalf("upstream = %q", route.Upstreams[0])
 	}
 }
 
@@ -34,7 +34,7 @@ func TestRouterNoMatch(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.HostRoute{
-		{Host: "api.example.com", Upstream: "http://api:8080"},
+		{Host: "api.example.com", Upstreams: []string{"http://api:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
@@ -58,7 +58,7 @@ func TestRouterEmptyHostNoMatch(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.HostRoute{
-		{Host: "api.example.com", Upstream: "http://api:8080"},
+		{Host: "api.example.com", Upstreams: []string{"http://api:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)

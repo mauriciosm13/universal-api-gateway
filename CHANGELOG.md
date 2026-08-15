@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Round-robin load balancing across comma-separated upstream URLs per route (`GATEWAY_DEFAULT_UPSTREAM`, path/host/header/method routes)
+- In-memory per-process upstream selection via `internal/routing/adapter/roundrobin`
+
+### Added
+
 - Upstream timeout and idempotent retry via `GATEWAY_UPSTREAM_TIMEOUT`, `GATEWAY_RETRY_MAX`, and `GATEWAY_RETRY_BACKOFF`
 - JSON 502/504 for upstream failures; `internal/reliability/` transport chain
 - `GATEWAY_RUNTIME=lambda|server` for AWS Lambda Web Adapter hosting

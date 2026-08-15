@@ -23,7 +23,7 @@ func TestRouterUsesFirstMatch(t *testing.T) {
 
 	first := stubRouter{err: routingport.ErrNoRoute}
 	second := stubRouter{
-		route: routingport.Route{ID: "second", Upstream: "http://second:8080"},
+		route: routingport.Route{ID: "second", Upstreams: []string{"http://second:8080"}},
 	}
 
 	router := NewRouter(first, second)

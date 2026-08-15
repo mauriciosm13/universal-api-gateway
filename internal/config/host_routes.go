@@ -5,48 +5,42 @@ import (
 	"strings"
 )
 
-// HostRoute maps an HTTP Host to an upstream URL.
+// HostRoute maps an HTTP Host to one or more upstream URLs.
 type HostRoute struct {
-	Host     string
-	Upstream string
+	Host      string
+	Upstreams []string
 }
 
 // ParseHostRoutes parses comma-separated host=upstream pairs.
+// Each upstream side may list multiple comma-separated URLs.
 func ParseHostRoutes(raw string) ([]HostRoute, error) {
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
 		return nil, nil
 	}
 
-	entries := strings.Split(raw, ",")
+	entries := splitRouteEntries(raw, isHostRouteEntry)
 	routes := make([]HostRoute, 0, len(entries))
 
 	for _, entry := range entries {
-		entry = strings.TrimSpace(entry)
-		if entry == "" {
-			continue
-		}
-
-		host, upstream, ok := strings.Cut(entry, "=")
+		host, upstreamRaw, ok := strings.Cut(entry, "=")
 		if !ok {
 			return nil, fmt.Errorf("entry %q: expected host=upstream", entry)
 		}
 
 		host = strings.TrimSpace(host)
-		upstream = strings.TrimSpace(upstream)
 		if host == "" {
 			return nil, fmt.Errorf("entry %q: host is required", entry)
 		}
-		if upstream == "" {
-			return nil, fmt.Errorf("entry %q: upstream is required", entry)
-		}
-		if err := ValidateUpstreamURL(upstream); err != nil {
+
+		upstreams, err := ParseUpstreamList(upstreamRaw)
+		if err != nil {
 			return nil, fmt.Errorf("entry %q: %w", entry, err)
 		}
 
 		routes = append(routes, HostRoute{
-			Host:     strings.ToLower(host),
-			Upstream: upstream,
+			Host:      strings.ToLower(host),
+			Upstreams: upstreams,
 		})
 	}
 

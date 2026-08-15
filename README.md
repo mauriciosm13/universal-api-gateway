@@ -61,11 +61,11 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_READ_TIMEOUT` | `15s` | Read timeout |
 | `GATEWAY_WRITE_TIMEOUT` | `15s` | Write timeout |
 | `GATEWAY_IDLE_TIMEOUT` | `60s` | Idle timeout |
-| `GATEWAY_DEFAULT_UPSTREAM` | — | Default upstream URL for reverse proxy |
-| `GATEWAY_PATH_ROUTES` | — | Comma-separated path routes: `/api=http://backend:8080` |
-| `GATEWAY_HEADER_ROUTES` | — | Comma-separated header routes: `X-Version=v1=http://v1:8080` |
-| `GATEWAY_HOST_ROUTES` | — | Comma-separated host routes: `api.example.com=http://api:8080` |
-| `GATEWAY_METHOD_ROUTES` | — | Comma-separated method routes: `GET=http://get:8080` |
+| `GATEWAY_DEFAULT_UPSTREAM` | — | Default upstream URL(s) for reverse proxy; comma-separated for round robin |
+| `GATEWAY_PATH_ROUTES` | — | Comma-separated path routes: `/api=http://backend:8080` or `/api=http://a:8080,http://b:8080` |
+| `GATEWAY_HEADER_ROUTES` | — | Comma-separated header routes: `X-Version=v1=http://v1:8080` (multiple upstream URLs per route supported) |
+| `GATEWAY_HOST_ROUTES` | — | Comma-separated host routes: `api.example.com=http://api:8080` (multiple upstream URLs per route supported) |
+| `GATEWAY_METHOD_ROUTES` | — | Comma-separated method routes: `GET=http://get:8080` (multiple upstream URLs per route supported) |
 | `GATEWAY_JWT_JWKS_URL` | — | JWKS URL for RS256/ES256 JWT validation (mutually exclusive with HMAC) |
 | `GATEWAY_JWT_HMAC_SECRET` | — | HMAC secret for HS256 JWT validation (min 32 chars; mutually exclusive with JWKS) |
 | `GATEWAY_JWT_ISSUER` | — | Optional expected JWT `iss` claim |

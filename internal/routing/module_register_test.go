@@ -14,13 +14,13 @@ func TestModuleRegisterPanicsOnInvalidUpstream(t *testing.T) {
 		}
 	}()
 
-	di.NewBuilder(config.Config{DefaultUpstream: "not-a-url"}, Module{})
+	di.NewBuilder(config.Config{DefaultUpstreams: []string{"not-a-url"}}, Module{})
 }
 
 func TestModuleRegisterProvidesRouterViaBuildRouter(t *testing.T) {
 	t.Parallel()
 
-	router, err := buildRouter(config.Config{DefaultUpstream: "http://default:8080"})
+	router, err := buildRouter(config.Config{DefaultUpstreams: []string{"http://default:8080"}})
 	if err != nil {
 		t.Fatalf("buildRouter() error = %v", err)
 	}
