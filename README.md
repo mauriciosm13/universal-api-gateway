@@ -73,6 +73,9 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_API_KEYS` | — | Allowed API keys: `key1:name1,key2:name2` or JSON |
 | `GATEWAY_API_KEY_HEADER` | `X-API-Key` | Header name for API key |
 | `GATEWAY_API_KEY_QUERY` | `api_key` | Query param name for API key |
+| `GATEWAY_RATE_LIMIT_RPS` | — | Global rate limit (tokens/s). Empty = off |
+| `GATEWAY_RATE_LIMIT_BURST` | — | Global burst. Required when RPS set |
+| `GATEWAY_RATE_LIMIT_ROUTES` | — | Per path prefix limits: `/api=10:20` |
 | `OTEL_SDK_DISABLED` | `true` | Disable OpenTelemetry tracing |
 | `OTEL_TRACES_EXPORTER` | `stdout` | Trace exporter when OTel enabled |
 

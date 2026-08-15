@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Token bucket rate limiting via `GATEWAY_RATE_LIMIT_RPS`, `GATEWAY_RATE_LIMIT_BURST`, and optional `GATEWAY_RATE_LIMIT_ROUTES`
+- Rate limit key from authenticated identity subject with host+path fallback
+- RFC MVP-4 and rate limiting specification
+
+### Added
+
 - API key authentication via `GATEWAY_API_KEYS` (header or query)
 - Composite JWT + API key auth when both configured
 - Identity in request context and upstream `X-User-Id` propagation

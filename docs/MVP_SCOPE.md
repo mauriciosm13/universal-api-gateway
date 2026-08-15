@@ -61,7 +61,7 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 
 | Deliverable | Status | Notes |
 |---|---|---|
-| Rate limiting (token bucket) | Planned | Week 5 |
+| Rate limiting (token bucket) | Done | Week 5 |
 | Request timeout | Planned | Week 6 |
 | Retry (idempotent methods) | Planned | Week 6 |
 | Load balancing (round robin) | Planned | Week 7 |
@@ -173,10 +173,10 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 5 — Rate limiting
 
-- [ ] Token bucket limiter adapter
-- [ ] Config: limits per route or global default
-- [ ] JSON 429 response
-- [ ] Tests + spec
+- [x] Token bucket limiter adapter
+- [x] Config: limits per route or global default
+- [x] JSON 429 response
+- [x] Tests + spec
 
 **Exit criteria:** Excess traffic receives 429; within limit passes through.
 
