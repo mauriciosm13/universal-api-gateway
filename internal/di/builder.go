@@ -16,7 +16,7 @@ import (
 type Builder struct {
 	cfg config.Config
 
-	authenticator authport.Authenticator
+	authenticator authport.RequestAuthenticator
 	router        routingport.Router
 	limiter       ratelimitport.Limiter
 	pipeline      middlewareport.Pipeline
@@ -39,7 +39,7 @@ func (b *Builder) Config() config.Config {
 }
 
 // ProvideAuthenticator sets the authentication port implementation.
-func (b *Builder) ProvideAuthenticator(a authport.Authenticator) {
+func (b *Builder) ProvideAuthenticator(a authport.RequestAuthenticator) {
 	b.authenticator = a
 }
 
@@ -69,7 +69,7 @@ func (b *Builder) ProvideTracer(t observabilityport.Tracer) {
 }
 
 // Authenticator returns the registered authenticator, if any.
-func (b *Builder) Authenticator() authport.Authenticator {
+func (b *Builder) Authenticator() authport.RequestAuthenticator {
 	return b.authenticator
 }
 

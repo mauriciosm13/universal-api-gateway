@@ -24,7 +24,7 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 |---|---|
 | M0 — Foundation | Complete |
 | M1 — Core Gateway | ~65% — in progress |
-| M2 — Auth & Authorization | In progress (JWT done) |
+| M2 — Auth & Authorization | In progress (JWT + API keys done) |
 | M3 — Traffic Management | Not started (MVP subset only) |
 
 ---
@@ -51,8 +51,8 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 | Deliverable | Status | Notes |
 |---|---|---|
 | JWT validation | Done | Week 3 — HS256 + JWKS (RS256/ES256) |
-| API keys | Planned | Week 4 |
-| User context propagation | Planned | Week 4 |
+| API keys | Done | Week 4 — header/query, env allowlist |
+| User context propagation | Done | Week 4 — context + `X-User-Id` upstream |
 | OAuth2 / OIDC | Post-MVP | |
 | mTLS | Post-MVP | |
 | RBAC / ABAC | Post-MVP | |
@@ -163,10 +163,11 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 4 — API keys + identity
 
-- [ ] API key validation (header or query, config via env)
-- [ ] User context attached to request (claims / key identity)
-- [ ] Auth middleware integrated in pipeline
-- [ ] Tests + spec
+- [x] API key validation (header or query, config via env)
+- [x] User context attached to request (claims / key identity)
+- [x] Upstream identity propagation (`X-User-Id`)
+- [x] Auth middleware integrated in pipeline
+- [x] Tests + spec
 
 **Exit criteria:** Request authenticated by JWT or API key; identity available to downstream routing.
 

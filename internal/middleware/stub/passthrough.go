@@ -15,8 +15,8 @@ func NewPassthroughPipeline() *PassthroughPipeline {
 }
 
 // Execute returns a not-implemented response for non-health traffic.
-func (p *PassthroughPipeline) Execute(_ context.Context, _ domain.Request) (domain.Response, error) {
-	return domain.Response{
+func (p *PassthroughPipeline) Execute(ctx context.Context, _ domain.Request) (context.Context, domain.Response, error) {
+	return ctx, domain.Response{
 		StatusCode: 501,
 		Headers:    map[string][]string{"Content-Type": {"text/plain"}},
 		Body:       []byte("gateway pipeline not implemented"),

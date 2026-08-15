@@ -10,6 +10,7 @@ import (
 	authstub "github.com/mauriciomendonca/universal-api-gateway/internal/auth/stub"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/di"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/domain"
 )
 
 func TestModuleRegisterPanicsOnInvalidJWKS(t *testing.T) {
@@ -29,21 +30,21 @@ func TestModuleRegisterPanicsOnInvalidJWKS(t *testing.T) {
 	}, Module{})
 }
 
-func TestBuildAuthenticatorUsesNoOpWhenJWTDisabled(t *testing.T) {
-	auth, err := buildAuthenticator(config.Config{})
+func TestBuildRequestAuthenticatorUsesNoOpWhenAuthDisabled(t *testing.T) {
+	auth, err := buildRequestAuthenticator(config.Config{})
 	if err != nil {
-		t.Fatalf("buildAuthenticator() error = %v", err)
+		t.Fatalf("buildRequestAuthenticator() error = %v", err)
 	}
 
 	noop := authstub.NewNoOpAuthenticator()
-	want, err := noop.Authenticate(context.Background(), "")
+	want, err := noop.AuthenticateRequest(context.Background(), domain.Request{})
 	if err != nil {
-		t.Fatalf("noop Authenticate() error = %v", err)
+		t.Fatalf("noop AuthenticateRequest() error = %v", err)
 	}
 
-	got, err := auth.Authenticate(context.Background(), "")
+	got, err := auth.AuthenticateRequest(context.Background(), domain.Request{})
 	if err != nil {
-		t.Fatalf("Authenticate() error = %v", err)
+		t.Fatalf("AuthenticateRequest() error = %v", err)
 	}
 
 	if got.Subject != want.Subject {
@@ -51,17 +52,56 @@ func TestBuildAuthenticatorUsesNoOpWhenJWTDisabled(t *testing.T) {
 	}
 }
 
-func TestBuildAuthenticatorUsesJWTWhenHMACConfigured(t *testing.T) {
-	auth, err := buildAuthenticator(config.Config{
+func TestBuildRequestAuthenticatorUsesJWTWhenHMACConfigured(t *testing.T) {
+	auth, err := buildRequestAuthenticator(config.Config{
 		JWT: config.JWTConfig{
 			HMACSecret: strings.Repeat("a", 32),
 		},
 	})
 	if err != nil {
-		t.Fatalf("buildAuthenticator() error = %v", err)
+		t.Fatalf("buildRequestAuthenticator() error = %v", err)
 	}
 
-	if _, err := auth.Authenticate(context.Background(), ""); err == nil {
-		t.Fatal("expected JWT authenticator to reject empty token")
+	if _, err := auth.AuthenticateRequest(context.Background(), domain.Request{}); err == nil {
+		t.Fatal("expected JWT authenticator to reject missing token")
+	}
+}
+
+func TestBuildRequestAuthenticatorUsesAPIKeyWhenConfigured(t *testing.T) {
+	auth, err := buildRequestAuthenticator(config.Config{
+		APIKeys: config.APIKeyConfig{
+			Keys:       map[string]string{"k1": "n1"},
+			HeaderName: "X-API-Key",
+			QueryParam: "api_key",
+		},
+	})
+	if err != nil {
+		t.Fatalf("buildRequestAuthenticator() error = %v", err)
+	}
+
+	if _, err := auth.AuthenticateRequest(context.Background(), domain.Request{}); err == nil {
+		t.Fatal("expected API key authenticator to reject missing key")
+	}
+}
+
+func TestBuildRequestAuthenticatorUsesCompositeWhenBothConfigured(t *testing.T) {
+	auth, err := buildRequestAuthenticator(config.Config{
+		JWT: config.JWTConfig{
+			HMACSecret: strings.Repeat("a", 32),
+		},
+		APIKeys: config.APIKeyConfig{
+			Keys:       map[string]string{"k1": "n1"},
+			HeaderName: "X-API-Key",
+			QueryParam: "api_key",
+		},
+	})
+	if err != nil {
+		t.Fatalf("buildRequestAuthenticator() error = %v", err)
+	}
+
+	if _, err := auth.AuthenticateRequest(context.Background(), domain.Request{
+		Headers: map[string][]string{"X-API-Key": {"k1"}},
+	}); err != nil {
+		t.Fatalf("AuthenticateRequest() error = %v", err)
 	}
 }

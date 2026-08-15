@@ -14,6 +14,9 @@ This project is under active development. The current release focuses on project
 - HTTP reverse proxy with default, path, and header routing
 - JSON error responses for gateway-generated 4xx/5xx errors
 - JWT authentication (HS256 HMAC or RS256/ES256 JWKS) when configured via env
+- API key authentication (header or query) when configured via env
+- Composite auth when JWT and API keys both configured
+- Upstream identity header `X-User-Id` from authenticated subject
 - Environment-based configuration
 - Docker and Docker Compose
 - Kubernetes manifests (Kustomize base + dev/staging/prod overlays)
@@ -67,6 +70,9 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_JWT_HMAC_SECRET` | — | HMAC secret for HS256 JWT validation (min 32 chars; mutually exclusive with JWKS) |
 | `GATEWAY_JWT_ISSUER` | — | Optional expected JWT `iss` claim |
 | `GATEWAY_JWT_AUDIENCE` | — | Optional expected JWT `aud` claim |
+| `GATEWAY_API_KEYS` | — | Allowed API keys: `key1:name1,key2:name2` or JSON |
+| `GATEWAY_API_KEY_HEADER` | `X-API-Key` | Header name for API key |
+| `GATEWAY_API_KEY_QUERY` | `api_key` | Query param name for API key |
 | `OTEL_SDK_DISABLED` | `true` | Disable OpenTelemetry tracing |
 | `OTEL_TRACES_EXPORTER` | `stdout` | Trace exporter when OTel enabled |
 

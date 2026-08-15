@@ -16,5 +16,5 @@ type Middleware interface {
 
 // Pipeline executes the composed middleware chain.
 type Pipeline interface {
-	Execute(ctx context.Context, req domain.Request) (domain.Response, error)
+	Execute(ctx context.Context, req domain.Request) (context.Context, domain.Response, error)
 }

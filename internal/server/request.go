@@ -14,10 +14,18 @@ func toDomainRequest(r *http.Request) domain.Request {
 		headers[key] = copied
 	}
 
+	query := make(map[string][]string, len(r.URL.Query()))
+	for key, values := range r.URL.Query() {
+		copied := make([]string, len(values))
+		copy(copied, values)
+		query[key] = copied
+	}
+
 	return domain.Request{
 		Method:  r.Method,
 		Path:    r.URL.Path,
 		Host:    r.Host,
 		Headers: headers,
+		Query:   query,
 	}
 }

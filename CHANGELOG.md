@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- API key authentication via `GATEWAY_API_KEYS` (header or query)
+- Composite JWT + API key auth when both configured
+- Identity in request context and upstream `X-User-Id` propagation
+- RFC MVP-3 and API keys / identity specification
+
 ### Changed
 
 - Gateway-generated 4xx/5xx error bodies are JSON (`Content-Type: application/json`) instead of plain text

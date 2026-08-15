@@ -9,6 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	jwtadapter "github.com/mauriciomendonca/universal-api-gateway/internal/auth/adapter/jwt"
+	requestadapter "github.com/mauriciomendonca/universal-api-gateway/internal/auth/adapter/request"
 	authport "github.com/mauriciomendonca/universal-api-gateway/internal/auth/port"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
 	requestpipeline "github.com/mauriciomendonca/universal-api-gateway/internal/middleware/adapter/request"
@@ -33,7 +34,7 @@ func TestGatewayJWTValidTokenProxies(t *testing.T) {
 		t.Fatalf("NewValidator() error = %v", err)
 	}
 
-	deps := newJWTTestDependencies(router, validator)
+	deps := newJWTTestDependencies(router, requestadapter.NewJWTAuthenticator(validator))
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
 
@@ -72,7 +73,7 @@ func TestGatewayJWTInvalidTokenReturns401(t *testing.T) {
 		t.Fatalf("NewValidator() error = %v", err)
 	}
 
-	deps := newJWTTestDependencies(router, validator)
+	deps := newJWTTestDependencies(router, requestadapter.NewJWTAuthenticator(validator))
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
 
@@ -104,7 +105,7 @@ func TestGatewayJWTMissingTokenReturns401(t *testing.T) {
 		t.Fatalf("NewValidator() error = %v", err)
 	}
 
-	deps := newJWTTestDependencies(router, validator)
+	deps := newJWTTestDependencies(router, requestadapter.NewJWTAuthenticator(validator))
 	srv := httptest.NewServer(New(deps).httpServer.Handler)
 	t.Cleanup(srv.Close)
 
@@ -117,7 +118,7 @@ func TestGatewayJWTMissingTokenReturns401(t *testing.T) {
 	assertJSONError(t, resp, http.StatusUnauthorized, "unauthorized")
 }
 
-func newJWTTestDependencies(router routingport.Router, authenticator authport.Authenticator) Dependencies {
+func newJWTTestDependencies(router routingport.Router, authenticator authport.RequestAuthenticator) Dependencies {
 	return Dependencies{
 		Config: config.Config{
 			ReadTimeout:  time.Second,

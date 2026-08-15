@@ -7,6 +7,7 @@ import (
 	authport "github.com/mauriciomendonca/universal-api-gateway/internal/auth/port"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/di"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/domain"
 )
 
 func TestBuildWiresDefaultModules(t *testing.T) {
@@ -58,7 +59,7 @@ func TestBuildStubSwapViaModuleOverride(t *testing.T) {
 		t.Fatalf("Build() error = %v", err)
 	}
 
-	identity, err := deps.Authenticator.Authenticate(context.Background(), "token")
+	identity, err := deps.Authenticator.AuthenticateRequest(context.Background(), domain.Request{})
 	if err != nil {
 		t.Fatalf("Authenticate() error = %v", err)
 	}
@@ -72,6 +73,6 @@ type stubAuthenticator struct {
 	subject string
 }
 
-func (s *stubAuthenticator) Authenticate(_ context.Context, _ string) (authport.Identity, error) {
+func (s *stubAuthenticator) AuthenticateRequest(_ context.Context, _ domain.Request) (authport.Identity, error) {
 	return authport.Identity{Subject: s.subject}, nil
 }
