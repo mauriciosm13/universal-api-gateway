@@ -2,6 +2,8 @@ package jwt
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/base64"
@@ -194,6 +196,69 @@ func TestMapClaimsToIdentity(t *testing.T) {
 	}
 }
 
+func TestValidatorAcceptsES256TokenFromJWKS(t *testing.T) {
+	t.Parallel()
+
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatalf("GenerateKey() error = %v", err)
+	}
+
+	jwks := ecJWKS(t, privateKey, "ec-kid")
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(jwks)
+	}))
+	t.Cleanup(server.Close)
+
+	validator, err := NewValidator(config.JWTConfig{JWKSURL: server.URL})
+	if err != nil {
+		t.Fatalf("NewValidator() error = %v", err)
+	}
+
+	token := signES256Token(t, privateKey, "ec-kid", jwt.MapClaims{
+		"sub": "ec-user",
+		"exp": time.Now().Add(time.Hour).Unix(),
+	})
+
+	identity, err := validator.Authenticate(context.Background(), token)
+	if err != nil {
+		t.Fatalf("Authenticate() error = %v", err)
+	}
+
+	if identity.Subject != "ec-user" {
+		t.Fatalf("subject = %q, want ec-user", identity.Subject)
+	}
+}
+
+func TestFetchJWKSRejectsNonOKStatus(t *testing.T) {
+	t.Parallel()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	t.Cleanup(server.Close)
+
+	_, err := fetchJWKS(context.Background(), server.URL)
+	if err == nil {
+		t.Fatal("expected error for non-200 JWKS response")
+	}
+}
+
+func TestMapClaimsToIdentityCoercesTypes(t *testing.T) {
+	t.Parallel()
+
+	identity := mapClaimsToIdentity(jwt.MapClaims{
+		"sub":   "user-1",
+		"admin": true,
+		"num":   json.Number("42"),
+	})
+
+	if identity.Claims["admin"] != "true" || identity.Claims["num"] != "42" {
+		t.Fatalf("claims = %+v", identity.Claims)
+	}
+}
+
 func mustHMACValidator(t *testing.T, cfg config.JWTConfig) *Validator {
 	t.Helper()
 
@@ -231,6 +296,20 @@ func signRS256Token(t *testing.T, key *rsa.PrivateKey, kid string, claims jwt.Ma
 	return signed
 }
 
+func signES256Token(t *testing.T, key *ecdsa.PrivateKey, kid string, claims jwt.MapClaims) string {
+	t.Helper()
+
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token.Header["kid"] = kid
+
+	signed, err := token.SignedString(key)
+	if err != nil {
+		t.Fatalf("SignedString() error = %v", err)
+	}
+
+	return signed
+}
+
 func rsaJWKS(t *testing.T, key *rsa.PrivateKey, kid string) jwksDocument {
 	t.Helper()
 
@@ -242,6 +321,22 @@ func rsaJWKS(t *testing.T, key *rsa.PrivateKey, kid string) jwksDocument {
 			Alg: "RS256",
 			N:   base64.RawURLEncoding.EncodeToString(key.N.Bytes()),
 			E:   base64.RawURLEncoding.EncodeToString(bigIntToBytes(key.PublicKey.E)),
+		}},
+	}
+}
+
+func ecJWKS(t *testing.T, key *ecdsa.PrivateKey, kid string) jwksDocument {
+	t.Helper()
+
+	return jwksDocument{
+		Keys: []jwkKey{{
+			Kty: "EC",
+			Kid: kid,
+			Use: "sig",
+			Alg: "ES256",
+			Crv: "P-256",
+			X:   base64.RawURLEncoding.EncodeToString(key.PublicKey.X.Bytes()),
+			Y:   base64.RawURLEncoding.EncodeToString(key.PublicKey.Y.Bytes()),
 		}},
 	}
 }

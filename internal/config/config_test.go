@@ -262,4 +262,22 @@ func TestValidateUpstreamURL(t *testing.T) {
 	if err := ValidateUpstreamURL("ftp://files.example.com"); err == nil {
 		t.Fatal("expected error for ftp scheme")
 	}
+
+	if err := ValidateUpstreamURL("http:///path"); err == nil {
+		t.Fatal("expected error for missing host")
+	}
+}
+
+func TestLoadInvalidDurationFallback(t *testing.T) {
+	t.Setenv("GATEWAY_READ_TIMEOUT", "invalid")
+	t.Setenv("OTEL_TRACES_EXPORTER", "none")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+
+	if cfg.ReadTimeout != defaultReadTimeout {
+		t.Fatalf("ReadTimeout = %v, want default %v", cfg.ReadTimeout, defaultReadTimeout)
+	}
 }

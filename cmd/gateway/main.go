@@ -45,6 +45,15 @@ func main() {
 
 	srv := server.New(deps)
 
+	if cfg.Runtime.IsLambda() {
+		logger.Info("gateway starting (lambda)", "addr", cfg.Addr())
+		if err := srv.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			logger.Error("gateway stopped unexpectedly", "error", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	go func() {
 		logger.Info("gateway starting", "addr", cfg.Addr())
 		if err := srv.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {

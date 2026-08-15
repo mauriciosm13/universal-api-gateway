@@ -55,6 +55,29 @@ func TestBuildMissingProviderReturnsError(t *testing.T) {
 	}
 }
 
+func TestBuilderAccessors(t *testing.T) {
+	t.Parallel()
+
+	custom := authstub.NewNoOpAuthenticator()
+	builder := NewBuilder(config.Config{Host: "10.0.0.1"}, FuncModule{
+		Name: "partial",
+		Fn: func(b *Builder) {
+			b.ProvideAuthenticator(custom)
+			b.ProvideLimiter(ratelimitstub.NewNoOpLimiter())
+		},
+	})
+
+	if builder.Config().Host != "10.0.0.1" {
+		t.Fatalf("Config().Host = %q", builder.Config().Host)
+	}
+	if builder.Authenticator() != custom {
+		t.Fatal("expected custom authenticator")
+	}
+	if builder.Limiter() == nil {
+		t.Fatal("expected limiter")
+	}
+}
+
 func TestModuleOverrideReplacesProvider(t *testing.T) {
 	t.Parallel()
 
