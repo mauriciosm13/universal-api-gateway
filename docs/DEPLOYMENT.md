@@ -131,10 +131,41 @@ See [RFC MVP-6](rfcs/mvp-aws-lambda-deployment.md) and [Spec — AWS Lambda runt
 
 ## Demo stack (local E2E)
 
+Reproducible MVP demo: gateway with JWT auth, global rate limit, and round-robin across two nginx mock upstreams.
+
 ```bash
 docker compose -f docker-compose.demo.yml up --build
 ./scripts/demo.sh
 ```
+
+`scripts/demo.sh` verifies:
+
+1. `GET /health/ready` → 200
+2. `GET /api/...` without auth → 401
+3. `GET /api/...` with JWT → 200 and upstream JSON body
+4. Burst proxied requests → 429
+5. Multiple proxied requests → both `X-Upstream-Id: upstream-a` and `upstream-b`
+
+Bootstrap E2E (brings stack up, runs demo, tears down):
+
+```bash
+bash quality/scripts/e2e-bootstrap.sh
+```
+
+Integration test (stack must already be running):
+
+```bash
+go test -tags=integration ./quality/e2e/...
+```
+
+### Per-instance limits (Docker / Lambda)
+
+Rate limiting and round-robin selection are **in-memory per gateway process**. With multiple replicas (Kubernetes, or concurrent Lambda instances):
+
+- Effective global rate limit ≈ `GATEWAY_RATE_LIMIT_RPS × instance count`
+- Round-robin distribution is per instance, not globally even
+
+See [ADR 0004](adrs/0004-rate-limit-lambda-strategy.md) for Lambda scaling behavior.
 
 ## Environment
 

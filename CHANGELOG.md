@@ -7,26 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0-mvp] - 2026-08-15
+
+MVP release (M0–M3 subset): routing, auth, rate limiting, upstream reliability, round-robin load balancing, reproducible demo stack, AWS Lambda deploy path.
+
+### Added
+
+- `docker-compose.demo.yml` — gateway + 2 mock upstreams with JWT, rate limit, round robin
+- `scripts/demo.sh` — E2E assertions for health, auth, 429, and load balancing
+- `quality/scripts/e2e-bootstrap.sh` — compose up + demo + teardown
+- `quality/e2e/bootstrap_integration_test.go` — integration health check (`-tags=integration`)
+- Round-robin load balancing across comma-separated upstream URLs per route
+- In-memory per-process upstream selection via `internal/routing/adapter/roundrobin`
+- Upstream timeout and idempotent retry via `GATEWAY_UPSTREAM_TIMEOUT`, `GATEWAY_RETRY_MAX`, and `GATEWAY_RETRY_BACKOFF`
+- JSON 502/504 for upstream failures; `internal/reliability/` transport chain
+- `GATEWAY_RUNTIME=lambda|server` for AWS Lambda Web Adapter hosting
+- MVP execution plan, AWS Lambda deploy design (RFC MVP-5/6, ADRs 0003–0005, specs)
+- `Dockerfile.lambda`, `deploy/aws/scripts/`
+
 ### Changed
 
 - Coverage gate measures `internal/` statements from a single `go test` run, fails on baseline regression, untested executable packages, and changed-code coverage below 90% on PRs (RFC 0010)
+- AWS `smoke-test.sh` — health, proxy, and optional JWT auth checks
 
 ### Fixed
 
 - OpenTelemetry resource merge no longer conflicts schema URLs when telemetry is enabled
 
-### Added
-
-- Round-robin load balancing across comma-separated upstream URLs per route (`GATEWAY_DEFAULT_UPSTREAM`, path/host/header/method routes)
-- In-memory per-process upstream selection via `internal/routing/adapter/roundrobin`
-
-### Added
-
-- Upstream timeout and idempotent retry via `GATEWAY_UPSTREAM_TIMEOUT`, `GATEWAY_RETRY_MAX`, and `GATEWAY_RETRY_BACKOFF`
-- JSON 502/504 for upstream failures; `internal/reliability/` transport chain
-- `GATEWAY_RUNTIME=lambda|server` for AWS Lambda Web Adapter hosting
-- MVP execution plan, AWS Lambda deploy design (RFC MVP-5/6, ADRs 0003–0005, specs)
-- `Dockerfile.lambda`, `deploy/aws/scripts/`, `docker-compose.demo.yml`, `scripts/demo.sh`
+## [0.1.0] - prior releases
 
 ### Added
 

@@ -1,8 +1,8 @@
 # Universal API Gateway — Product Roadmap
 
-> **Status:** v0.1 — foundation in progress  
+> **Status:** v0.2.0-mvp — MVP complete (M0–M3 subset)  
 > **Vision:** Build a production-grade, cloud-native, cloud-agnostic API Gateway that evolves into a complete API Platform and Developer Platform.  
-> **MVP track:** [MVP_SCOPE.md](MVP_SCOPE.md) — accelerated path through M3 (~8 weeks)
+> **MVP track:** [MVP_SCOPE.md](MVP_SCOPE.md) — accelerated path through M3 (~8 weeks) ✅
 
 ---
 
@@ -11,9 +11,9 @@
 | Milestone | Status |
 |---|---|
 | M0 — Foundation | 🟢 Complete |
-| M1 — Core Gateway | 🟡 In progress |
-| M2 — Auth & Authorization | 🟡 In progress |
-| M3 — Traffic Management | ⚪ Not started |
+| M1 — Core Gateway | 🟢 MVP complete |
+| M2 — Auth & Authorization | 🟢 MVP complete |
+| M3 — Traffic Management | 🟢 MVP complete |
 | M4 — Observability | ⚪ Not started |
 | M5 — Plugin Platform | ⚪ Not started |
 | M6 — API Management | ⚪ Not started |
@@ -157,8 +157,10 @@ Every feature must satisfy at least one of:
 
 - [x] Rate limiting — token bucket (MVP Week 5)
 - [ ] Rate limiting — fixed window, sliding window, leaky bucket
-- [ ] Load balancing (round robin, least connections, weighted, sticky)
-- [ ] Reliability (retry, timeout, circuit breaker, fallback, bulkhead)
+- [x] Load balancing — round robin (MVP Week 7)
+- [ ] Load balancing — least connections, weighted, sticky
+- [x] Reliability — timeout and retry (MVP Week 6)
+- [ ] Reliability — circuit breaker, fallback, bulkhead
 - [ ] Caching (memory, Redis, response cache)
 
 **Success criteria:** Traffic controlled safely under high load.

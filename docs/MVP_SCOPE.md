@@ -23,9 +23,9 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 | Milestone | MVP status |
 |---|---|
 | M0 — Foundation | Complete |
-| M1 — Core Gateway | ~65% — in progress |
-| M2 — Auth & Authorization | In progress (JWT + API keys done) |
-| M3 — Traffic Management | In progress (rate limit done; timeout/retry/LB planned) |
+| M1 — Core Gateway | Complete (MVP subset) |
+| M2 — Auth & Authorization | Complete (MVP subset) |
+| M3 — Traffic Management | Complete (MVP subset) |
 
 ---
 
@@ -62,8 +62,8 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 | Deliverable | Status | Notes |
 |---|---|---|
 | Rate limiting (token bucket) | Done | Week 5 |
-| Request timeout | Planned | Week 6 |
-| Retry (idempotent methods) | Planned | Week 6 |
+| Request timeout | Done | Week 6 |
+| Retry (idempotent methods) | Done | Week 6 |
 | Load balancing (round robin) | Done | Week 7 |
 | Circuit breaker | Post-MVP | |
 | Redis cache | Post-MVP | |
@@ -77,7 +77,7 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 | K8s base manifests | Done | dev overlay sufficient for MVP |
 | CI quality gate | Done | |
 | Health endpoints | Done | |
-| AWS Lambda deploy (AWS CLI) | Designed | [MVP_EXECUTION_PLAN.md](MVP_EXECUTION_PLAN.md) |
+| AWS Lambda deploy (AWS CLI) | Done | [MVP_EXECUTION_PLAN.md](MVP_EXECUTION_PLAN.md) |
 
 ---
 
@@ -194,10 +194,10 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 6 — Timeout and retry
 
-- [ ] Upstream request timeout (configurable) — [spec](specs/upstream-timeout-retry.md)
-- [ ] Retry for idempotent methods (GET, HEAD, OPTIONS) with max attempts
-- [ ] JSON 504/502 where appropriate
-- [ ] Tests + spec
+- [x] Upstream request timeout (configurable) — [spec](specs/upstream-timeout-retry.md)
+- [x] Retry for idempotent methods (GET, HEAD, OPTIONS) with max attempts
+- [x] JSON 504/502 where appropriate
+- [x] Tests + spec
 
 **Exit criteria:** Slow upstream times out; transient failures retried safely.
 
@@ -212,12 +212,12 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 8 — MVP polish and release
 
-- [ ] End-to-end demo: `docker-compose.demo.yml` + `scripts/demo.sh`
-- [ ] AWS Lambda staging deploy via [deploy/aws/](../deploy/aws/)
-- [ ] Update README, DEPLOYMENT, CHANGELOG
-- [ ] Mark M1–M3 MVP items done in ROADMAP
-- [ ] Known limitations doc updated
-- [ ] Tag `v0.2.0-mvp` (or semver per team preference)
+- [x] End-to-end demo: `docker-compose.demo.yml` + `scripts/demo.sh`
+- [x] AWS Lambda staging deploy via [deploy/aws/](../deploy/aws/)
+- [x] Update README, DEPLOYMENT, CHANGELOG
+- [x] Mark M1–M3 MVP items done in ROADMAP
+- [x] Known limitations doc updated
+- [ ] Tag `v0.2.0-mvp` (post-merge)
 
 **Exit criteria:** New engineer can run MVP stack locally in under 15 minutes using docs.
 
@@ -225,11 +225,11 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ## Success Criteria (MVP Done)
 
-- [ ] All **In Scope** items checked
-- [ ] No **Out of Scope** work merged without scope doc update
-- [ ] `make quality` passes on `main`
-- [ ] Gateway deployable via Docker Compose and K8s dev overlay
-- [ ] Demo script or documented curl flow for: route → auth → rate limit → upstream
+- [x] All **In Scope** items checked
+- [x] No **Out of Scope** work merged without scope doc update
+- [x] `make quality` passes on `main`
+- [x] Gateway deployable via Docker Compose and K8s dev overlay
+- [x] Demo script or documented curl flow for: route → auth → rate limit → upstream
 
 ---
 

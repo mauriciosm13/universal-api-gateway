@@ -123,11 +123,11 @@ Streams **A** and **C** start **Day 1**. Stream **B** starts when `Route.Upstrea
 
 **Week 3 exit criteria (MVP done)**
 
-- [ ] All MVP_SCOPE in-scope items checked
-- [ ] `make quality` passes on `main`
-- [ ] Demo runnable in < 15 min via README
-- [ ] Staging Lambda: route → auth → rate limit → upstream
-- [ ] Tag `v0.2.0-mvp` published
+- [x] All MVP_SCOPE in-scope items checked
+- [x] `make quality` passes on `main`
+- [x] Demo runnable in < 15 min via README
+- [x] Staging Lambda: route → auth → rate limit → upstream
+- [ ] Tag `v0.2.0-mvp` published (post-merge)
 
 ---
 

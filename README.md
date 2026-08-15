@@ -2,9 +2,9 @@
 
 Cloud-agnostic API Gateway for authentication, routing, and rate limiting.
 
-**Status: v0.1 — foundation in progress**
+**Status: v0.2.0-mvp — MVP complete (M0–M3 subset)**
 
-This project is under active development. The current release focuses on project foundation: health endpoints, configuration, Docker, and engineering documentation.
+Production-usable gateway: routing, JWT/API key auth, rate limiting, upstream timeout/retry, round-robin load balancing, Docker/Kubernetes/AWS Lambda deploy paths.
 
 ## What works today
 
@@ -17,6 +17,9 @@ This project is under active development. The current release focuses on project
 - API key authentication (header or query) when configured via env
 - Composite auth when JWT and API keys both configured
 - Upstream identity header `X-User-Id` from authenticated subject
+- Token bucket rate limiting with JSON 429 responses
+- Upstream timeout and idempotent retry with JSON 502/504
+- Round-robin load balancing across comma-separated upstream URLs
 - Environment-based configuration
 - Docker and Docker Compose
 - Kubernetes manifests (Kustomize base + dev/staging/prod overlays)
@@ -33,6 +36,17 @@ This project is under active development. The current release focuses on project
 go run ./cmd/gateway
 curl http://localhost:8080/health
 ```
+
+### Quick demo (< 15 min)
+
+Full MVP stack: gateway + 2 upstreams, JWT auth, rate limit, round robin.
+
+```bash
+docker compose -f docker-compose.demo.yml up --build
+./scripts/demo.sh
+```
+
+Requires Docker, Go (for JWT generation in `demo.sh`), and `curl`. Gateway listens on `:8080` by default.
 
 ### Docker
 
