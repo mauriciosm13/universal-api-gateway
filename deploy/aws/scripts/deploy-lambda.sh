@@ -111,6 +111,14 @@ aws lambda add-permission \
   --region "${AWS_REGION}" \
   2>/dev/null || true
 
+aws lambda add-permission \
+  --function-name "${FUNC_NAME}" \
+  --statement-id "FunctionURLAllowPublicInvoke" \
+  --action lambda:InvokeFunction \
+  --principal "*" \
+  --region "${AWS_REGION}" \
+  2>/dev/null || true
+
 FUNCTION_URL="$(aws lambda get-function-url-config \
   --function-name "${FUNC_NAME}" \
   --region "${AWS_REGION}" \

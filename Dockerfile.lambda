@@ -15,10 +15,14 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /gateway 
 # Runtime — AWS Lambda Web Adapter (see ADR 0003)
 FROM public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1
 
+# Lambda loads the adapter from /opt/extensions (required for Function URL → HTTP).
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1 /lambda-adapter /opt/extensions/lambda-adapter
+
 COPY --from=builder /gateway /gateway
 
 ENV PORT=8080
 ENV AWS_LWA_READINESS_CHECK_PATH=/health/ready
+ENV AWS_LWA_ASYNC_INIT=true
 ENV GATEWAY_HOST=0.0.0.0
 ENV GATEWAY_PORT=8080
 

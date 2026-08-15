@@ -20,8 +20,13 @@ log "Logging in to ECR: ${REGISTRY}"
 aws ecr get-login-password --region "${AWS_REGION}" | \
   docker login --username AWS --password-stdin "${REGISTRY}"
 
-log "Building Lambda image from Dockerfile.lambda"
-docker build -f "${REPO_ROOT}/Dockerfile.lambda" -t "${IMAGE_URI}" "${REPO_ROOT}"
+log "Building Lambda image from Dockerfile.lambda (linux/amd64)"
+docker build --platform linux/amd64 \
+  --provenance=false \
+  --sbom=false \
+  -f "${REPO_ROOT}/Dockerfile.lambda" \
+  -t "${IMAGE_URI}" \
+  "${REPO_ROOT}"
 
 log "Pushing ${IMAGE_URI}"
 docker push "${IMAGE_URI}"
