@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (design — MVP Weeks 6–8 + AWS Lambda)
+
+- Execution plan: [docs/MVP_EXECUTION_PLAN.md](docs/MVP_EXECUTION_PLAN.md)
+- RFC MVP-5 (timeout, retry, load balancing, release)
+- RFC MVP-6 (AWS Lambda deploy via AWS CLI)
+- Specs: upstream timeout/retry, round robin LB, AWS Lambda runtime
+- ADRs 0003 (Lambda Web Adapter), 0004 (rate limit on Lambda), 0005 (AWS CLI deploy)
+- `Dockerfile.lambda`, `deploy/aws/scripts/`, `docker-compose.demo.yml`, `scripts/demo.sh`
+
 ### Added
 
 - Token bucket rate limiting via `GATEWAY_RATE_LIMIT_RPS`, `GATEWAY_RATE_LIMIT_BURST`, and optional `GATEWAY_RATE_LIMIT_ROUTES`

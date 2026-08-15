@@ -27,5 +27,9 @@ vendor/
 .env.*
 !.env.example
 
+# AWS deploy local overrides
+deploy/aws/.outputs/
+deploy/aws/config/*.local.json
+
 # Build cache
 .cache/

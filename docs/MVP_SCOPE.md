@@ -25,7 +25,7 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 | M0 — Foundation | Complete |
 | M1 — Core Gateway | ~65% — in progress |
 | M2 — Auth & Authorization | In progress (JWT + API keys done) |
-| M3 — Traffic Management | Not started (MVP subset only) |
+| M3 — Traffic Management | In progress (rate limit done; timeout/retry/LB planned) |
 
 ---
 
@@ -75,10 +75,22 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 |---|---|---|
 | Docker / Compose | Done | |
 | K8s base manifests | Done | dev overlay sufficient for MVP |
-| CI quality gate | Done | Phase 1 |
+| CI quality gate | Done | |
 | Health endpoints | Done | |
+| AWS Lambda deploy (AWS CLI) | Designed | [MVP_EXECUTION_PLAN.md](MVP_EXECUTION_PLAN.md) |
 
 ---
+
+## Execution plan (Weeks 6–8 + AWS)
+
+Full parallel schedule: **[MVP_EXECUTION_PLAN.md](MVP_EXECUTION_PLAN.md)**
+
+| Week | Focus | Design |
+|---|---|---|
+| 6 | Timeout + retry | [RFC MVP-5](rfcs/mvp-weeks-6-8-reliability-lb-release.md), [spec](specs/upstream-timeout-retry.md) |
+| 7 | Round robin LB | [spec](specs/load-balancing-round-robin.md) |
+| 6–8 | AWS Lambda | [RFC MVP-6](rfcs/mvp-aws-lambda-deployment.md), [spec](specs/aws-lambda-runtime.md) |
+| 8 | Demo + release | `docker-compose.demo.yml`, tag `v0.2.0-mvp` |
 
 ## Out of Scope (Post-MVP)
 
@@ -182,7 +194,7 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 6 — Timeout and retry
 
-- [ ] Upstream request timeout (configurable)
+- [ ] Upstream request timeout (configurable) — [spec](specs/upstream-timeout-retry.md)
 - [ ] Retry for idempotent methods (GET, HEAD, OPTIONS) with max attempts
 - [ ] JSON 504/502 where appropriate
 - [ ] Tests + spec
@@ -191,7 +203,7 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 7 — Load balancing
 
-- [ ] Multiple upstreams per route (comma-separated URLs)
+- [ ] Multiple upstreams per route (comma-separated URLs) — [spec](specs/load-balancing-round-robin.md)
 - [ ] Round robin selection
 - [ ] Health-aware skip deferred — simple round robin only
 - [ ] Tests + spec
@@ -200,7 +212,8 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 8 — MVP polish and release
 
-- [ ] End-to-end demo: Docker Compose with 2 upstreams + auth + rate limit
+- [ ] End-to-end demo: `docker-compose.demo.yml` + `scripts/demo.sh`
+- [ ] AWS Lambda staging deploy via [deploy/aws/](../deploy/aws/)
 - [ ] Update README, DEPLOYMENT, CHANGELOG
 - [ ] Mark M1–M3 MVP items done in ROADMAP
 - [ ] Known limitations doc updated
@@ -225,3 +238,4 @@ Assumes ~1 focused week per row. Adjust if part-time.
 - [ROADMAP.md](ROADMAP.md) — full product vision
 - [PROJECT_BIBLE.md](PROJECT_BIBLE.md) — engineering principles
 - [DEPLOYMENT.md](DEPLOYMENT.md) — run targets
+- [MVP_EXECUTION_PLAN.md](MVP_EXECUTION_PLAN.md) — Weeks 6–8 + AWS Lambda parallel schedule

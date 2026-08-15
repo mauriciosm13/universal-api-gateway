@@ -96,6 +96,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full product vision and milestone
 | [Engineering Manual](docs/ENGINEERING_MANUAL.md) | Development process index |
 | [Deployment](docs/DEPLOYMENT.md) | Docker, Kubernetes, cloud targets |
 | [MVP Scope](docs/MVP_SCOPE.md) | Accelerated M0–M3 scope and 8-week backlog |
+| [MVP Execution Plan](docs/MVP_EXECUTION_PLAN.md) | Weeks 6–8 parallel schedule + AWS Lambda |
 
 ## Development
 

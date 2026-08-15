@@ -1,0 +1,35 @@
+# Demo stack — Week 8 implementation target.
+# See docs/MVP_EXECUTION_PLAN.md and scripts/demo.sh
+
+services:
+  upstream-a:
+    image: nginx:alpine
+    volumes:
+      - ./deploy/demo/upstream-a.conf:/etc/nginx/conf.d/default.conf:ro
+    expose:
+      - "80"
+
+  upstream-b:
+    image: nginx:alpine
+    volumes:
+      - ./deploy/demo/upstream-b.conf:/etc/nginx/conf.d/default.conf:ro
+    expose:
+      - "80"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    environment:
+      GATEWAY_HOST: "0.0.0.0"
+      GATEWAY_PORT: "8080"
+      GATEWAY_DEFAULT_UPSTREAM: "http://upstream-a:80,http://upstream-b:80"
+      GATEWAY_PATH_ROUTES: "/api=http://upstream-a:80,http://upstream-b:80"
+      GATEWAY_JWT_HMAC_SECRET: "demo-secret-min-32-characters-long!!"
+      GATEWAY_RATE_LIMIT_RPS: "5"
+      GATEWAY_RATE_LIMIT_BURST: "8"
+    depends_on:
+      - upstream-a
+      - upstream-b

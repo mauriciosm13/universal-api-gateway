@@ -1,0 +1,66 @@
+# AWS Lambda deploy — staging on version tags; prod via manual dispatch.
+# Requires GitHub OIDC → IAM role (see deploy/aws/README.md).
+name: Deploy AWS Lambda
+
+on:
+  push:
+    tags:
+      - 'v0.*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - prod
+      image_tag:
+        description: Container image tag
+        required: true
+        default: latest
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go test -race -count=1 ./...
+
+  deploy:
+    name: Deploy Lambda
+    runs-on: ubuntu-latest
+    needs: test
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'staging' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # Uncomment when OIDC role is provisioned in AWS:
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::ACCOUNT_ID:role/uag-github-actions-deploy
+      #     aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Deploy (placeholder until OIDC configured)
+        run: |
+          echo "Configure OIDC IAM role, then uncomment aws-actions/configure-aws-credentials."
+          echo "Run locally:"
+          echo "  ./deploy/aws/scripts/build-and-push.sh --tag ${{ github.event_name == 'workflow_dispatch' && inputs.image_tag || github.ref_name }}"
+          echo "  ./deploy/aws/scripts/deploy-lambda.sh --env ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'staging' }} --tag ${{ github.event_name == 'workflow_dispatch' && inputs.image_tag || github.ref_name }}"
