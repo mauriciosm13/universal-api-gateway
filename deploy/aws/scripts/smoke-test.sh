@@ -33,4 +33,34 @@ if [[ "${code}" != "200" ]]; then
 fi
 log "OK /health/live → ${code}"
 
+code="$(curl -s -o /dev/null -w '%{http_code}' "${URL}get")"
+if [[ "${code}" != "200" ]]; then
+  die "proxy GET /get returned ${code}"
+fi
+log "OK proxy GET /get → ${code}"
+
+code="$(curl -s -o /dev/null -w '%{http_code}' "${URL}api/smoke")"
+case "${code}" in
+  401)
+    log "OK auth enforced on /api → 401"
+    if [[ -n "${SMOKE_JWT:-}" ]]; then
+      auth_code="$(curl -s -o /dev/null -w '%{http_code}' \
+        -H "Authorization: Bearer ${SMOKE_JWT}" \
+        "${URL}api/smoke")"
+      if [[ "${auth_code}" != "200" ]]; then
+        die "authenticated GET /api/smoke returned ${auth_code}"
+      fi
+      log "OK authenticated proxy /api/smoke → ${auth_code}"
+    else
+      log "SKIP authenticated proxy (set SMOKE_JWT to enable)"
+    fi
+    ;;
+  200)
+    log "OK proxy /api/smoke without auth (JWT not configured) → 200"
+    ;;
+  *)
+    die "GET /api/smoke returned ${code}"
+    ;;
+esac
+
 log "Smoke test passed"
