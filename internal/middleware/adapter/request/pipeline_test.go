@@ -15,7 +15,7 @@ func TestPipelineContinues(t *testing.T) {
 
 	pipeline := NewPipeline(ContinueHandler, NewErrorMiddleware())
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{Path: "/api"})
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{Path: "/api"})
 	if err != nil {
 		t.Fatalf("Execute() error = %v", err)
 	}
@@ -33,7 +33,7 @@ func TestRateLimitMiddlewareBlocks(t *testing.T) {
 		NewRateLimitMiddleware(blockLimiter{}),
 	)
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{Host: "localhost", Path: "/api"})
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{Host: "localhost", Path: "/api"})
 	if err != nil {
 		t.Fatalf("Execute() error = %v", err)
 	}
@@ -57,7 +57,7 @@ func TestRateLimitMiddlewareError(t *testing.T) {
 		NewRateLimitMiddleware(errorLimiter{}),
 	)
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{Host: "localhost", Path: "/api"})
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{Host: "localhost", Path: "/api"})
 	if err != nil {
 		t.Fatalf("Execute() error = %v", err)
 	}
@@ -82,7 +82,7 @@ func TestErrorMiddlewareMapsError(t *testing.T) {
 		failingMiddleware{},
 	)
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{})
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{})
 	if err != nil {
 		t.Fatalf("Execute() error = %v", err)
 	}

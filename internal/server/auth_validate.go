@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	requestpipeline "github.com/mauriciomendonca/universal-api-gateway/internal/middleware/adapter/request"
+	authctx "github.com/mauriciomendonca/universal-api-gateway/internal/auth/context"
 )
 
 type authValidateBody struct {
@@ -16,7 +16,7 @@ func handleAuthValidate(deps Dependencies) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := toDomainRequest(r)
 
-		resp, err := deps.Pipeline.Execute(r.Context(), req)
+		ctx, resp, err := deps.Pipeline.Execute(r.Context(), req)
 		if err != nil {
 			writeJSONError(w, http.StatusInternalServerError, "pipeline error")
 			return
@@ -26,9 +26,8 @@ func handleAuthValidate(deps Dependencies) http.HandlerFunc {
 			return
 		}
 
-		token := requestpipeline.BearerToken(req)
-		identity, err := deps.Authenticator.Authenticate(r.Context(), token)
-		if err != nil {
+		identity, ok := authctx.IdentityFrom(ctx)
+		if !ok {
 			writeJSONError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		}

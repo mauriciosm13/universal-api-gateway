@@ -514,8 +514,8 @@ func TestGatewayMethodRouting(t *testing.T) {
 
 type errorPipeline struct{}
 
-func (errorPipeline) Execute(_ context.Context, _ domain.Request) (domain.Response, error) {
-	return domain.Response{}, errors.New("pipeline failed")
+func (errorPipeline) Execute(ctx context.Context, _ domain.Request) (context.Context, domain.Response, error) {
+	return ctx, domain.Response{}, errors.New("pipeline failed")
 }
 
 type errorRouter struct{}

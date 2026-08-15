@@ -7,8 +7,11 @@ import (
 	"net/url"
 	"sync"
 
+	authctx "github.com/mauriciomendonca/universal-api-gateway/internal/auth/context"
 	routingport "github.com/mauriciomendonca/universal-api-gateway/internal/routing/port"
 )
+
+const upstreamUserIDHeader = "X-User-Id"
 
 type gatewayHandler struct {
 	deps    Dependencies
@@ -22,7 +25,7 @@ func newGatewayHandler(deps Dependencies) *gatewayHandler {
 func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req := toDomainRequest(r)
 
-	resp, err := h.deps.Pipeline.Execute(r.Context(), req)
+	ctx, resp, err := h.deps.Pipeline.Execute(r.Context(), req)
 	if err != nil {
 		writeJSONError(w, http.StatusInternalServerError, "pipeline error")
 		return
@@ -32,7 +35,7 @@ func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	route, err := h.deps.Router.Resolve(r.Context(), req)
+	route, err := h.deps.Router.Resolve(ctx, req)
 	if errors.Is(err, routingport.ErrNoRoute) {
 		writeJSONError(w, http.StatusNotFound, "no route matched")
 		return
@@ -48,7 +51,22 @@ func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r = r.WithContext(ctx)
+	applyUpstreamIdentity(r)
 	proxy.ServeHTTP(w, r)
+}
+
+func applyUpstreamIdentity(r *http.Request) {
+	if r.Header.Get(upstreamUserIDHeader) != "" {
+		return
+	}
+
+	identity, ok := authctx.IdentityFrom(r.Context())
+	if !ok || identity.Subject == "" {
+		return
+	}
+
+	r.Header.Set(upstreamUserIDHeader, identity.Subject)
 }
 
 func (h *gatewayHandler) proxyFor(upstream string) (*httputil.ReverseProxy, error) {

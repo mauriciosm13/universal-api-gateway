@@ -11,7 +11,7 @@ func TestPassthroughPipelineReturnsNotImplemented(t *testing.T) {
 	t.Parallel()
 
 	pipeline := NewPassthroughPipeline()
-	resp, err := pipeline.Execute(context.Background(), domain.Request{Path: "/api"})
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{Path: "/api"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

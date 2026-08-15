@@ -131,7 +131,7 @@ Every feature must satisfy at least one of:
 - [x] JWT
 - [ ] OAuth2
 - [ ] OpenID Connect
-- [ ] API keys
+- [x] API keys
 - [ ] Basic authentication
 - [ ] Mutual TLS
 
@@ -143,7 +143,7 @@ Every feature must satisfy at least one of:
 
 ### Identity
 
-- [ ] User context
+- [x] User context
 - [ ] Service identity
 - [ ] Machine identity
 

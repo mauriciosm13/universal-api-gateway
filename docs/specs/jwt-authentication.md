@@ -66,4 +66,4 @@ Empty or invalid token returns error. Success returns `Identity{Subject, Claims}
 
 - No per-route public bypass (all proxied traffic requires JWT when enabled)
 - JWKS keys loaded at startup; no background refresh in MVP
-- Identity not forwarded to upstream (Week 4)
+- Identity forwarded to upstream via `X-User-Id` (see [api-keys-and-identity.md](docs/specs/api-keys-and-identity.md))

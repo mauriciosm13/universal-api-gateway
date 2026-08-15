@@ -7,6 +7,7 @@ import (
 	authport "github.com/mauriciomendonca/universal-api-gateway/internal/auth/port"
 	authstub "github.com/mauriciomendonca/universal-api-gateway/internal/auth/stub"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/config"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/domain"
 	middlewarestub "github.com/mauriciomendonca/universal-api-gateway/internal/middleware/stub"
 	observabilitystub "github.com/mauriciomendonca/universal-api-gateway/internal/observability/stub"
 	ratelimitstub "github.com/mauriciomendonca/universal-api-gateway/internal/ratelimit/stub"
@@ -71,7 +72,7 @@ func TestModuleOverrideReplacesProvider(t *testing.T) {
 		t.Fatalf("Build() error = %v", err)
 	}
 
-	identity, err := deps.Authenticator.Authenticate(context.Background(), "token")
+	identity, err := deps.Authenticator.AuthenticateRequest(context.Background(), domain.Request{})
 	if err != nil {
 		t.Fatalf("Authenticate() error = %v", err)
 	}
@@ -85,7 +86,7 @@ type stubAuthenticator struct {
 	subject string
 }
 
-func (s *stubAuthenticator) Authenticate(_ context.Context, _ string) (authport.Identity, error) {
+func (s *stubAuthenticator) AuthenticateRequest(_ context.Context, _ domain.Request) (authport.Identity, error) {
 	return authport.Identity{Subject: s.subject}, nil
 }
 

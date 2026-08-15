@@ -6,6 +6,7 @@ type Request struct {
 	Path    string
 	Host    string
 	Headers map[string][]string
+	Query   map[string][]string
 }
 
 // Response is a transport-agnostic outbound gateway response.

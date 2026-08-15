@@ -12,7 +12,7 @@ import (
 // Gateway holds injected gateway ports and configuration.
 type Gateway struct {
 	Config        config.Config
-	Authenticator authport.Authenticator
+	Authenticator authport.RequestAuthenticator
 	Router        routingport.Router
 	Limiter       ratelimitport.Limiter
 	Pipeline      middlewareport.Pipeline

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	authctx "github.com/mauriciomendonca/universal-api-gateway/internal/auth/context"
 	authport "github.com/mauriciomendonca/universal-api-gateway/internal/auth/port"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/domain"
 )
@@ -15,10 +16,10 @@ func TestAuthMiddlewareAllowsNoOpAuthenticator(t *testing.T) {
 
 	pipeline := NewPipeline(
 		ContinueHandler,
-		NewAuthMiddleware(stubAuthenticator{}),
+		NewAuthMiddleware(stubRequestAuthenticator{}),
 	)
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{})
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{})
 	if err != nil {
 		t.Fatalf("Execute() error = %v", err)
 	}
@@ -28,15 +29,34 @@ func TestAuthMiddlewareAllowsNoOpAuthenticator(t *testing.T) {
 	}
 }
 
+func TestAuthMiddlewareStoresIdentityInContext(t *testing.T) {
+	t.Parallel()
+
+	pipeline := NewPipeline(
+		ContinueHandler,
+		NewAuthMiddleware(stubRequestAuthenticator{}),
+	)
+
+	ctx, _, err := pipeline.Execute(context.Background(), domain.Request{})
+	if err != nil {
+		t.Fatalf("Execute() error = %v", err)
+	}
+
+	id, ok := authctx.IdentityFrom(ctx)
+	if !ok || id.Subject != "anonymous" {
+		t.Fatalf("identity = %+v, ok = %v", id, ok)
+	}
+}
+
 func TestAuthMiddlewareRejectsInvalidToken(t *testing.T) {
 	t.Parallel()
 
 	pipeline := NewPipeline(
 		ContinueHandler,
-		NewAuthMiddleware(rejectAuthenticator{}),
+		NewAuthMiddleware(rejectRequestAuthenticator{}),
 	)
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{
 		Headers: map[string][]string{"Authorization": {"Bearer bad"}},
 	})
 	if err != nil {
@@ -53,10 +73,10 @@ func TestAuthMiddlewareRejectsMissingToken(t *testing.T) {
 
 	pipeline := NewPipeline(
 		ContinueHandler,
-		NewAuthMiddleware(rejectAuthenticator{}),
+		NewAuthMiddleware(rejectRequestAuthenticator{}),
 	)
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{})
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{})
 	if err != nil {
 		t.Fatalf("Execute() error = %v", err)
 	}
@@ -71,10 +91,10 @@ func TestAuthMiddlewareRejectsMalformedAuthorizationHeader(t *testing.T) {
 
 	pipeline := NewPipeline(
 		ContinueHandler,
-		NewAuthMiddleware(rejectAuthenticator{}),
+		NewAuthMiddleware(rejectRequestAuthenticator{}),
 	)
 
-	resp, err := pipeline.Execute(context.Background(), domain.Request{
+	_, resp, err := pipeline.Execute(context.Background(), domain.Request{
 		Headers: map[string][]string{"Authorization": {"Basic dGVzdA=="}},
 	})
 	if err != nil {
@@ -86,16 +106,16 @@ func TestAuthMiddlewareRejectsMalformedAuthorizationHeader(t *testing.T) {
 	}
 }
 
-type stubAuthenticator struct{}
+type stubRequestAuthenticator struct{}
 
-func (stubAuthenticator) Authenticate(context.Context, string) (authport.Identity, error) {
+func (stubRequestAuthenticator) AuthenticateRequest(context.Context, domain.Request) (authport.Identity, error) {
 	return authport.Identity{Subject: "anonymous"}, nil
 }
 
-type rejectAuthenticator struct{}
+type rejectRequestAuthenticator struct{}
 
-func (rejectAuthenticator) Authenticate(_ context.Context, token string) (authport.Identity, error) {
-	if token == "" {
+func (rejectRequestAuthenticator) AuthenticateRequest(_ context.Context, req domain.Request) (authport.Identity, error) {
+	if len(req.Headers["Authorization"]) == 0 {
 		return authport.Identity{}, errors.New("missing token")
 	}
 
