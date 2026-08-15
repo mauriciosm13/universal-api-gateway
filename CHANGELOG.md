@@ -7,13 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added (design — MVP Weeks 6–8 + AWS Lambda)
+### Added
 
-- Execution plan: [docs/MVP_EXECUTION_PLAN.md](docs/MVP_EXECUTION_PLAN.md)
-- RFC MVP-5 (timeout, retry, load balancing, release)
-- RFC MVP-6 (AWS Lambda deploy via AWS CLI)
-- Specs: upstream timeout/retry, round robin LB, AWS Lambda runtime
-- ADRs 0003 (Lambda Web Adapter), 0004 (rate limit on Lambda), 0005 (AWS CLI deploy)
+- Upstream timeout and idempotent retry via `GATEWAY_UPSTREAM_TIMEOUT`, `GATEWAY_RETRY_MAX`, and `GATEWAY_RETRY_BACKOFF`
+- JSON 502/504 for upstream failures; `internal/reliability/` transport chain
+- `GATEWAY_RUNTIME=lambda|server` for AWS Lambda Web Adapter hosting
+- MVP execution plan, AWS Lambda deploy design (RFC MVP-5/6, ADRs 0003–0005, specs)
 - `Dockerfile.lambda`, `deploy/aws/scripts/`, `docker-compose.demo.yml`, `scripts/demo.sh`
 
 ### Added

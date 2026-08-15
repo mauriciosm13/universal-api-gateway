@@ -146,3 +146,34 @@ func TestLimiterEmptyKeyReturnsError(t *testing.T) {
 		t.Fatal("expected error for empty key")
 	}
 }
+
+func TestLimiterCapsTokensAtBurst(t *testing.T) {
+	t.Parallel()
+
+	current := time.Unix(0, 0)
+	limiter := NewLimiterWithClock(config.RateLimitConfig{
+		Global: &config.RateLimitParams{RPS: 1000, Burst: 2},
+	}, func() time.Time { return current })
+
+	ctx := ratelimitctx.WithRequestPath(context.Background(), "/api")
+
+	for i := 0; i < 2; i++ {
+		if allowed, _ := limiter.Allow(ctx, "client"); !allowed {
+			t.Fatalf("request %d blocked within burst", i+1)
+		}
+	}
+	if allowed, _ := limiter.Allow(ctx, "client"); allowed {
+		t.Fatal("expected block at burst cap")
+	}
+
+	current = current.Add(10 * time.Second)
+
+	for i := 0; i < 2; i++ {
+		if allowed, _ := limiter.Allow(ctx, "client"); !allowed {
+			t.Fatalf("refill request %d blocked", i+1)
+		}
+	}
+	if allowed, _ := limiter.Allow(ctx, "client"); allowed {
+		t.Fatal("expected block after refill burst consumed")
+	}
+}

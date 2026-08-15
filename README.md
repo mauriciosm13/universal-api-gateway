@@ -76,6 +76,10 @@ See [Deployment](docs/DEPLOYMENT.md) for overlay details.
 | `GATEWAY_RATE_LIMIT_RPS` | — | Global rate limit (tokens/s). Empty = off |
 | `GATEWAY_RATE_LIMIT_BURST` | — | Global burst. Required when RPS set |
 | `GATEWAY_RATE_LIMIT_ROUTES` | — | Per path prefix limits: `/api=10:20` |
+| `GATEWAY_UPSTREAM_TIMEOUT` | `30s` | Upstream request timeout per attempt |
+| `GATEWAY_RETRY_MAX` | `2` | Extra retry attempts for GET/HEAD/OPTIONS (`0` = off) |
+| `GATEWAY_RETRY_BACKOFF` | `100ms` | Linear backoff between retries |
+| `GATEWAY_RUNTIME` | `server` | `server` or `lambda` (AWS Lambda Web Adapter) |
 | `OTEL_SDK_DISABLED` | `true` | Disable OpenTelemetry tracing |
 | `OTEL_TRACES_EXPORTER` | `stdout` | Trace exporter when OTel enabled |
 

@@ -1,25 +1,32 @@
 package server
 
 import (
+	"context"
 	"errors"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"sync"
 
 	authctx "github.com/mauriciomendonca/universal-api-gateway/internal/auth/context"
+	"github.com/mauriciomendonca/universal-api-gateway/internal/reliability"
 	routingport "github.com/mauriciomendonca/universal-api-gateway/internal/routing/port"
 )
 
 const upstreamUserIDHeader = "X-User-Id"
 
 type gatewayHandler struct {
-	deps    Dependencies
-	proxies sync.Map
+	deps      Dependencies
+	proxies   sync.Map
+	transport http.RoundTripper
 }
 
 func newGatewayHandler(deps Dependencies) *gatewayHandler {
-	return &gatewayHandler{deps: deps}
+	return &gatewayHandler{
+		deps:      deps,
+		transport: reliability.NewRoundTripper(deps.Config.Reliability.WithDefaults()),
+	}
 }
 
 func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +87,31 @@ func (h *gatewayHandler) proxyFor(upstream string) (*httputil.ReverseProxy, erro
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(target)
+	proxy.Transport = h.transport
+	proxy.ErrorHandler = h.handleUpstreamError
 	actual, _ := h.proxies.LoadOrStore(upstream, proxy)
 	return actual.(*httputil.ReverseProxy), nil
+}
+
+func (h *gatewayHandler) handleUpstreamError(w http.ResponseWriter, _ *http.Request, err error) {
+	switch {
+	case errors.Is(err, context.DeadlineExceeded):
+		writeJSONError(w, http.StatusGatewayTimeout, "upstream timeout")
+	case isTimeoutError(err):
+		writeJSONError(w, http.StatusGatewayTimeout, "upstream timeout")
+	case isConnectionError(err):
+		writeJSONError(w, http.StatusBadGateway, "upstream unavailable")
+	default:
+		writeJSONError(w, http.StatusBadGateway, "upstream unavailable")
+	}
+}
+
+func isTimeoutError(err error) bool {
+	var netErr net.Error
+	return errors.As(err, &netErr) && netErr.Timeout()
+}
+
+func isConnectionError(err error) bool {
+	var opErr *net.OpError
+	return errors.As(err, &opErr)
 }
