@@ -157,8 +157,8 @@ func TestLoadDefaultUpstreamValid(t *testing.T) {
 		t.Fatalf("Load() error = %v", err)
 	}
 
-	if cfg.DefaultUpstream != "http://backend:8080" {
-		t.Fatalf("expected default upstream, got %q", cfg.DefaultUpstream)
+	if cfg.DefaultUpstreams[0] != "http://backend:8080" {
+		t.Fatalf("expected default upstream, got %q", cfg.DefaultUpstreams[0])
 	}
 }
 

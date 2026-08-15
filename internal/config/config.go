@@ -22,22 +22,22 @@ const (
 
 // Config holds runtime configuration loaded from environment variables.
 type Config struct {
-	Host            string
-	Port            int
-	ReadTimeout     time.Duration
-	WriteTimeout    time.Duration
-	IdleTimeout     time.Duration
-	DefaultUpstream string
-	PathRoutes      []PathRoute
-	HeaderRoutes    []HeaderRoute
-	HostRoutes      []HostRoute
-	MethodRoutes    []MethodRoute
-	Telemetry       TelemetryConfig
-	JWT             JWTConfig
-	APIKeys         APIKeyConfig
-	RateLimit       RateLimitConfig
-	Reliability     ReliabilityConfig
-	Runtime         RuntimeConfig
+	Host             string
+	Port             int
+	ReadTimeout      time.Duration
+	WriteTimeout     time.Duration
+	IdleTimeout      time.Duration
+	DefaultUpstreams []string
+	PathRoutes       []PathRoute
+	HeaderRoutes     []HeaderRoute
+	HostRoutes       []HostRoute
+	MethodRoutes     []MethodRoute
+	Telemetry        TelemetryConfig
+	JWT              JWTConfig
+	APIKeys          APIKeyConfig
+	RateLimit        RateLimitConfig
+	Reliability      ReliabilityConfig
+	Runtime          RuntimeConfig
 }
 
 // TelemetryConfig holds OpenTelemetry settings from OTEL_* environment variables.
@@ -60,9 +60,11 @@ func Load() (Config, error) {
 		return Config{}, err
 	}
 
-	defaultUpstream := os.Getenv("GATEWAY_DEFAULT_UPSTREAM")
-	if defaultUpstream != "" {
-		if err := ValidateUpstreamURL(defaultUpstream); err != nil {
+	defaultUpstreamRaw := os.Getenv("GATEWAY_DEFAULT_UPSTREAM")
+	var defaultUpstreams []string
+	if defaultUpstreamRaw != "" {
+		defaultUpstreams, err = ParseUpstreamList(defaultUpstreamRaw)
+		if err != nil {
 			return Config{}, fmt.Errorf("invalid GATEWAY_DEFAULT_UPSTREAM: %w", err)
 		}
 	}
@@ -113,22 +115,22 @@ func Load() (Config, error) {
 	}
 
 	return Config{
-		Host:            envString("GATEWAY_HOST", defaultHost),
-		Port:            port,
-		ReadTimeout:     envDuration("GATEWAY_READ_TIMEOUT", defaultReadTimeout),
-		WriteTimeout:    envDuration("GATEWAY_WRITE_TIMEOUT", defaultWriteTimeout),
-		IdleTimeout:     envDuration("GATEWAY_IDLE_TIMEOUT", defaultIdleTimeout),
-		DefaultUpstream: defaultUpstream,
-		PathRoutes:      pathRoutes,
-		HeaderRoutes:    headerRoutes,
-		HostRoutes:      hostRoutes,
-		MethodRoutes:    methodRoutes,
-		Telemetry:       telemetry,
-		JWT:             jwtCfg,
-		APIKeys:         apiKeyCfg,
-		RateLimit:       rateLimitCfg,
-		Reliability:     reliabilityCfg,
-		Runtime:         runtimeCfg,
+		Host:             envString("GATEWAY_HOST", defaultHost),
+		Port:             port,
+		ReadTimeout:      envDuration("GATEWAY_READ_TIMEOUT", defaultReadTimeout),
+		WriteTimeout:     envDuration("GATEWAY_WRITE_TIMEOUT", defaultWriteTimeout),
+		IdleTimeout:      envDuration("GATEWAY_IDLE_TIMEOUT", defaultIdleTimeout),
+		DefaultUpstreams: defaultUpstreams,
+		PathRoutes:       pathRoutes,
+		HeaderRoutes:     headerRoutes,
+		HostRoutes:       hostRoutes,
+		MethodRoutes:     methodRoutes,
+		Telemetry:        telemetry,
+		JWT:              jwtCfg,
+		APIKeys:          apiKeyCfg,
+		RateLimit:        rateLimitCfg,
+		Reliability:      reliabilityCfg,
+		Runtime:          runtimeCfg,
 	}, nil
 }
 

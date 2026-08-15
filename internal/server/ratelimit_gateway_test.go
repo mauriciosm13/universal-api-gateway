@@ -22,7 +22,7 @@ func newRateLimitTestDependencies(t *testing.T, cfg config.RateLimitConfig) Depe
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -88,7 +88,7 @@ func TestGatewayRateLimitRefillAllowsTraffic(t *testing.T) {
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -197,7 +197,7 @@ func TestGatewayRateLimitBlockedDoesNotCallUpstream(t *testing.T) {
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}

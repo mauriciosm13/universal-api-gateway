@@ -14,8 +14,8 @@ func TestRouterMatchesHeader(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.HeaderRoute{
-		{Name: "X-Version", Value: "v1", Upstream: "http://v1:8080"},
-		{Name: "X-Version", Value: "v2", Upstream: "http://v2:8080"},
+		{Name: "X-Version", Value: "v1", Upstreams: []string{"http://v1:8080"}},
+		{Name: "X-Version", Value: "v2", Upstreams: []string{"http://v2:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
@@ -28,8 +28,8 @@ func TestRouterMatchesHeader(t *testing.T) {
 		t.Fatalf("Resolve() error = %v", err)
 	}
 
-	if route.Upstream != "http://v2:8080" {
-		t.Fatalf("upstream = %q, want http://v2:8080", route.Upstream)
+	if route.Upstreams[0] != "http://v2:8080" {
+		t.Fatalf("upstream = %q, want http://v2:8080", route.Upstreams[0])
 	}
 }
 
@@ -37,7 +37,7 @@ func TestRouterCanonicalHeaderName(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.HeaderRoute{
-		{Name: "x-version", Value: "v1", Upstream: "http://v1:8080"},
+		{Name: "x-version", Value: "v1", Upstreams: []string{"http://v1:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
@@ -50,8 +50,8 @@ func TestRouterCanonicalHeaderName(t *testing.T) {
 		t.Fatalf("Resolve() error = %v", err)
 	}
 
-	if route.Upstream != "http://v1:8080" {
-		t.Fatalf("upstream = %q, want http://v1:8080", route.Upstream)
+	if route.Upstreams[0] != "http://v1:8080" {
+		t.Fatalf("upstream = %q, want http://v1:8080", route.Upstreams[0])
 	}
 }
 
@@ -59,7 +59,7 @@ func TestRouterNoMatch(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.HeaderRoute{
-		{Name: "X-Version", Value: "v1", Upstream: "http://v1:8080"},
+		{Name: "X-Version", Value: "v1", Upstreams: []string{"http://v1:8080"}},
 	})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)

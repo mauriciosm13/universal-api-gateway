@@ -14,9 +14,9 @@ func TestRouterLongestPrefixMatch(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: "http://api:8080"},
-		{Prefix: "/api/v2", Upstream: "http://api-v2:8080"},
-	}, "")
+		{Prefix: "/api", Upstreams: []string{"http://api:8080"}},
+		{Prefix: "/api/v2", Upstreams: []string{"http://api-v2:8080"}},
+	}, nil)
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -41,8 +41,8 @@ func TestRouterLongestPrefixMatch(t *testing.T) {
 			t.Fatalf("Resolve(%q) ID = %q, want %q", tt.path, route.ID, tt.wantID)
 		}
 
-		if route.Upstream != tt.wantHost {
-			t.Fatalf("Resolve(%q) upstream = %q, want %q", tt.path, route.Upstream, tt.wantHost)
+		if route.Upstreams[0] != tt.wantHost {
+			t.Fatalf("Resolve(%q) upstream = %q, want %q", tt.path, route.Upstreams[0], tt.wantHost)
 		}
 	}
 }
@@ -51,8 +51,8 @@ func TestRouterPrefixBoundary(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: "http://api:8080"},
-	}, "")
+		{Prefix: "/api", Upstreams: []string{"http://api:8080"}},
+	}, nil)
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -67,8 +67,8 @@ func TestRouterDefaultFallback(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: "http://api:8080"},
-	}, "http://default:8080")
+		{Prefix: "/api", Upstreams: []string{"http://api:8080"}},
+	}, []string{"http://default:8080"})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -78,7 +78,7 @@ func TestRouterDefaultFallback(t *testing.T) {
 		t.Fatalf("Resolve() error = %v", err)
 	}
 
-	if route.ID != "default" || route.Upstream != "http://default:8080" {
+	if route.ID != "default" || route.Upstreams[0] != "http://default:8080" {
 		t.Fatalf("route = %+v, want default upstream", route)
 	}
 }
@@ -87,8 +87,8 @@ func TestRouterNoMatchWithoutDefault(t *testing.T) {
 	t.Parallel()
 
 	router, err := NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: "http://api:8080"},
-	}, "")
+		{Prefix: "/api", Upstreams: []string{"http://api:8080"}},
+	}, nil)
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -102,7 +102,7 @@ func TestRouterNoMatchWithoutDefault(t *testing.T) {
 func TestNewRouterRequiresRoutes(t *testing.T) {
 	t.Parallel()
 
-	if _, err := NewRouter(nil, "http://default:8080"); err == nil {
+	if _, err := NewRouter(nil, []string{"http://default:8080"}); err == nil {
 		t.Fatal("NewRouter(nil) error = nil, want error")
 	}
 }
@@ -111,8 +111,8 @@ func TestNewRouterValidatesDefaultUpstream(t *testing.T) {
 	t.Parallel()
 
 	if _, err := NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: "http://api:8080"},
-	}, "not-a-url"); err == nil {
+		{Prefix: "/api", Upstreams: []string{"http://api:8080"}},
+	}, []string{"not-a-url"}); err == nil {
 		t.Fatal("NewRouter() error = nil, want error")
 	}
 }

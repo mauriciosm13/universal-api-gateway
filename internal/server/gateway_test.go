@@ -39,7 +39,7 @@ func TestGatewayProxiesToUpstream(t *testing.T) {
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -125,7 +125,7 @@ func TestHealthEndpointsBypassProxy(t *testing.T) {
 	}))
 	t.Cleanup(upstream.Close)
 
-	router, err := staticrouter.NewRouter(upstream.URL)
+	router, err := staticrouter.NewRouter([]string{upstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -168,8 +168,8 @@ func TestGatewayPathRouting(t *testing.T) {
 	t.Cleanup(otherUpstream.Close)
 
 	router, err := pathrouter.NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: apiUpstream.URL},
-	}, otherUpstream.URL)
+		{Prefix: "/api", Upstreams: []string{apiUpstream.URL}},
+	}, []string{otherUpstream.URL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
@@ -220,15 +220,15 @@ func TestGatewayHeaderRouting(t *testing.T) {
 	t.Cleanup(pathUpstream.Close)
 
 	headerRouter, err := headerrouter.NewRouter([]config.HeaderRoute{
-		{Name: "X-Version", Value: "v1", Upstream: v1Upstream.URL},
+		{Name: "X-Version", Value: "v1", Upstreams: []string{v1Upstream.URL}},
 	})
 	if err != nil {
 		t.Fatalf("header NewRouter() error = %v", err)
 	}
 
 	pathRouter, err := pathrouter.NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: pathUpstream.URL},
-	}, "")
+		{Prefix: "/api", Upstreams: []string{pathUpstream.URL}},
+	}, nil)
 	if err != nil {
 		t.Fatalf("path NewRouter() error = %v", err)
 	}
@@ -287,15 +287,15 @@ func TestGatewayHostRouting(t *testing.T) {
 	t.Cleanup(pathUpstream.Close)
 
 	hostRouter, err := hostrouter.NewRouter([]config.HostRoute{
-		{Host: "api.example.com", Upstream: hostUpstream.URL},
+		{Host: "api.example.com", Upstreams: []string{hostUpstream.URL}},
 	})
 	if err != nil {
 		t.Fatalf("host NewRouter() error = %v", err)
 	}
 
 	pathRouter, err := pathrouter.NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: pathUpstream.URL},
-	}, "")
+		{Prefix: "/api", Upstreams: []string{pathUpstream.URL}},
+	}, nil)
 	if err != nil {
 		t.Fatalf("path NewRouter() error = %v", err)
 	}
@@ -461,15 +461,15 @@ func TestGatewayMethodRouting(t *testing.T) {
 	t.Cleanup(getUpstream.Close)
 
 	methodRouter, err := methodrouter.NewRouter([]config.MethodRoute{
-		{Method: "POST", Upstream: postUpstream.URL},
+		{Method: "POST", Upstreams: []string{postUpstream.URL}},
 	})
 	if err != nil {
 		t.Fatalf("method NewRouter() error = %v", err)
 	}
 
 	pathRouter, err := pathrouter.NewRouter([]config.PathRoute{
-		{Prefix: "/api", Upstream: getUpstream.URL},
-	}, "")
+		{Prefix: "/api", Upstreams: []string{getUpstream.URL}},
+	}, nil)
 	if err != nil {
 		t.Fatalf("path NewRouter() error = %v", err)
 	}
@@ -527,7 +527,7 @@ func (errorRouter) Resolve(_ context.Context, _ domain.Request) (routingport.Rou
 type badUpstreamRouter struct{}
 
 func (badUpstreamRouter) Resolve(_ context.Context, _ domain.Request) (routingport.Route, error) {
-	return routingport.Route{Upstream: "://invalid"}, nil
+	return routingport.Route{Upstreams: []string{"://invalid"}}, nil
 }
 
 type blockGatewayLimiter struct{}

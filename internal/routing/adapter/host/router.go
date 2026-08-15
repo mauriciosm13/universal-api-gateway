@@ -12,8 +12,8 @@ import (
 )
 
 type routeEntry struct {
-	host     string
-	upstream string
+	host      string
+	upstreams []string
 }
 
 // Router resolves requests by HTTP Host header.
@@ -30,8 +30,8 @@ func NewRouter(routes []config.HostRoute) (*Router, error) {
 	entries := make([]routeEntry, len(routes))
 	for i, route := range routes {
 		entries[i] = routeEntry{
-			host:     strings.ToLower(route.Host),
-			upstream: route.Upstream,
+			host:      strings.ToLower(route.Host),
+			upstreams: route.Upstreams,
 		}
 	}
 
@@ -45,8 +45,8 @@ func (r *Router) Resolve(_ context.Context, req domain.Request) (port.Route, err
 	for _, route := range r.routes {
 		if requestHost == route.host {
 			return port.Route{
-				ID:       fmt.Sprintf("host:%s", route.host),
-				Upstream: route.upstream,
+				ID:        fmt.Sprintf("host:%s", route.host),
+				Upstreams: route.upstreams,
 			}, nil
 		}
 	}

@@ -240,7 +240,7 @@ func testAPIKeyAuthenticator(t *testing.T, withJWT bool) authport.RequestAuthent
 func newAPIKeyTestDependencies(t *testing.T, upstreamURL string, authenticator authport.RequestAuthenticator) Dependencies {
 	t.Helper()
 
-	router, err := staticrouter.NewRouter(upstreamURL)
+	router, err := staticrouter.NewRouter([]string{upstreamURL})
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}

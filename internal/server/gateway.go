@@ -11,6 +11,7 @@ import (
 
 	authctx "github.com/mauriciomendonca/universal-api-gateway/internal/auth/context"
 	"github.com/mauriciomendonca/universal-api-gateway/internal/reliability"
+	roundrobin "github.com/mauriciomendonca/universal-api-gateway/internal/routing/adapter/roundrobin"
 	routingport "github.com/mauriciomendonca/universal-api-gateway/internal/routing/port"
 )
 
@@ -20,12 +21,14 @@ type gatewayHandler struct {
 	deps      Dependencies
 	proxies   sync.Map
 	transport http.RoundTripper
+	selector  roundrobin.UpstreamSelector
 }
 
 func newGatewayHandler(deps Dependencies) *gatewayHandler {
 	return &gatewayHandler{
 		deps:      deps,
 		transport: reliability.NewRoundTripper(deps.Config.Reliability.WithDefaults()),
+		selector:  roundrobin.NewSelector(),
 	}
 }
 
@@ -52,7 +55,13 @@ func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxy, err := h.proxyFor(route.Upstream)
+	upstream, err := h.selectUpstream(route)
+	if err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "invalid upstream")
+		return
+	}
+
+	proxy, err := h.proxyFor(upstream)
 	if err != nil {
 		writeJSONError(w, http.StatusInternalServerError, "invalid upstream")
 		return
@@ -61,6 +70,17 @@ func (h *gatewayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r = r.WithContext(ctx)
 	applyUpstreamIdentity(r)
 	proxy.ServeHTTP(w, r)
+}
+
+func (h *gatewayHandler) selectUpstream(route routingport.Route) (string, error) {
+	if len(route.Upstreams) == 0 {
+		return "", errors.New("empty upstream list")
+	}
+	if len(route.Upstreams) == 1 {
+		return route.Upstreams[0], nil
+	}
+
+	return h.selector.Next(route.ID, route.Upstreams)
 }
 
 func applyUpstreamIdentity(r *http.Request) {

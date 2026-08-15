@@ -56,15 +56,15 @@ func buildRouter(cfg config.Config) (routingport.Router, error) {
 	}
 
 	if len(cfg.PathRoutes) > 0 {
-		pathRouter, err := pathrouter.NewRouter(cfg.PathRoutes, "")
+		pathRouter, err := pathrouter.NewRouter(cfg.PathRoutes, nil)
 		if err != nil {
 			return nil, fmt.Errorf("path router: %w", err)
 		}
 		routers = append(routers, pathRouter)
 	}
 
-	if cfg.DefaultUpstream != "" {
-		staticRouter, err := staticrouter.NewRouter(cfg.DefaultUpstream)
+	if len(cfg.DefaultUpstreams) > 0 {
+		staticRouter, err := staticrouter.NewRouter(cfg.DefaultUpstreams)
 		if err != nil {
 			return nil, fmt.Errorf("static router: %w", err)
 		}

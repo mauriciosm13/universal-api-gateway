@@ -5,51 +5,45 @@ import (
 	"strings"
 )
 
-// PathRoute maps a path prefix to an upstream URL.
+// PathRoute maps a path prefix to one or more upstream URLs.
 type PathRoute struct {
-	Prefix   string
-	Upstream string
+	Prefix    string
+	Upstreams []string
 }
 
 // ParsePathRoutes parses comma-separated prefix=upstream pairs.
+// Each upstream side may list multiple comma-separated URLs.
 func ParsePathRoutes(raw string) ([]PathRoute, error) {
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
 		return nil, nil
 	}
 
-	entries := strings.Split(raw, ",")
+	entries := splitRouteEntries(raw, isPathRouteEntry)
 	routes := make([]PathRoute, 0, len(entries))
 
 	for _, entry := range entries {
-		entry = strings.TrimSpace(entry)
-		if entry == "" {
-			continue
-		}
-
-		prefix, upstream, ok := strings.Cut(entry, "=")
+		prefix, upstreamRaw, ok := strings.Cut(entry, "=")
 		if !ok {
 			return nil, fmt.Errorf("entry %q: expected prefix=upstream", entry)
 		}
 
 		prefix = strings.TrimSpace(prefix)
-		upstream = strings.TrimSpace(upstream)
 		if prefix == "" {
 			return nil, fmt.Errorf("entry %q: prefix is required", entry)
 		}
 		if !strings.HasPrefix(prefix, "/") {
 			return nil, fmt.Errorf("entry %q: prefix must start with /", entry)
 		}
-		if upstream == "" {
-			return nil, fmt.Errorf("entry %q: upstream is required", entry)
-		}
-		if err := ValidateUpstreamURL(upstream); err != nil {
+
+		upstreams, err := ParseUpstreamList(upstreamRaw)
+		if err != nil {
 			return nil, fmt.Errorf("entry %q: %w", entry, err)
 		}
 
 		routes = append(routes, PathRoute{
-			Prefix:   prefix,
-			Upstream: upstream,
+			Prefix:    prefix,
+			Upstreams: upstreams,
 		})
 	}
 

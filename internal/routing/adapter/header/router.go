@@ -11,9 +11,9 @@ import (
 )
 
 type routeEntry struct {
-	name     string
-	value    string
-	upstream string
+	name      string
+	value     string
+	upstreams []string
 }
 
 // Router resolves requests by exact HTTP header match.
@@ -30,9 +30,9 @@ func NewRouter(routes []config.HeaderRoute) (*Router, error) {
 	entries := make([]routeEntry, len(routes))
 	for i, route := range routes {
 		entries[i] = routeEntry{
-			name:     http.CanonicalHeaderKey(route.Name),
-			value:    route.Value,
-			upstream: route.Upstream,
+			name:      http.CanonicalHeaderKey(route.Name),
+			value:     route.Value,
+			upstreams: route.Upstreams,
 		}
 	}
 
@@ -50,8 +50,8 @@ func (r *Router) Resolve(_ context.Context, req domain.Request) (port.Route, err
 		for _, value := range values {
 			if value == route.value {
 				return port.Route{
-					ID:       fmt.Sprintf("header:%s=%s", route.name, route.value),
-					Upstream: route.upstream,
+					ID:        fmt.Sprintf("header:%s=%s", route.name, route.value),
+					Upstreams: route.upstreams,
 				}, nil
 			}
 		}

@@ -64,7 +64,7 @@ The MVP is **not** the full product vision (M4–M12). It is a gateway that can:
 | Rate limiting (token bucket) | Done | Week 5 |
 | Request timeout | Planned | Week 6 |
 | Retry (idempotent methods) | Planned | Week 6 |
-| Load balancing (round robin) | Planned | Week 7 |
+| Load balancing (round robin) | Done | Week 7 |
 | Circuit breaker | Post-MVP | |
 | Redis cache | Post-MVP | |
 | Sticky sessions | Post-MVP | |
@@ -203,10 +203,10 @@ Assumes ~1 focused week per row. Adjust if part-time.
 
 ### Week 7 — Load balancing
 
-- [ ] Multiple upstreams per route (comma-separated URLs) — [spec](specs/load-balancing-round-robin.md)
-- [ ] Round robin selection
-- [ ] Health-aware skip deferred — simple round robin only
-- [ ] Tests + spec
+- [x] Multiple upstreams per route (comma-separated URLs) — [spec](specs/load-balancing-round-robin.md)
+- [x] Round robin selection
+- [x] Health-aware skip deferred — simple round robin only
+- [x] Tests + spec
 
 **Exit criteria:** Traffic distributed across configured upstreams.
 

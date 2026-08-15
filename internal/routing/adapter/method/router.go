@@ -11,8 +11,8 @@ import (
 )
 
 type routeEntry struct {
-	method   string
-	upstream string
+	method    string
+	upstreams []string
 }
 
 // Router resolves requests by HTTP method.
@@ -29,8 +29,8 @@ func NewRouter(routes []config.MethodRoute) (*Router, error) {
 	entries := make([]routeEntry, len(routes))
 	for i, route := range routes {
 		entries[i] = routeEntry{
-			method:   strings.ToUpper(route.Method),
-			upstream: route.Upstream,
+			method:    strings.ToUpper(route.Method),
+			upstreams: route.Upstreams,
 		}
 	}
 
@@ -44,8 +44,8 @@ func (r *Router) Resolve(_ context.Context, req domain.Request) (port.Route, err
 	for _, route := range r.routes {
 		if method == route.method {
 			return port.Route{
-				ID:       fmt.Sprintf("method:%s", route.method),
-				Upstream: route.upstream,
+				ID:        fmt.Sprintf("method:%s", route.method),
+				Upstreams: route.upstreams,
 			}, nil
 		}
 	}
